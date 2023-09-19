@@ -7,9 +7,9 @@ from stable_baselines3.common import base_class, vec_env
 from torch.nn import functional as F
 
 from imitation.algorithms import base
-from imitation.algorithms.adversarial import common
 from imitation.rewards import reward_nets
 
+import common
 
 class RewardNetFromDiscriminatorLogit(reward_nets.RewardNet):
     r"""Converts the discriminator logits raw value to a reward signal.

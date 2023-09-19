@@ -11,7 +11,7 @@ from stable_baselines3.ppo import MlpPolicy
 from stable_baselines3 import PPO
 from stable_baselines3.common.policies import ActorCriticPolicy
 from imitation.util.networks import RunningNorm
-from imitation.algorithms.adversarial.gail import GAIL
+from gail import GAIL
 from nets import MyRewardNet
 from settings import numHA, _n_timesteps, motor_model, pv_stddev, initialHA, initialLA
 from scipy.stats import norm
