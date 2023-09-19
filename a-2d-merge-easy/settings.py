@@ -20,6 +20,8 @@ pv_stddev = [0.005, 0.5]
 
 numHA = 4
 _n_timesteps = 74
+initialHA = 0
+initialLA = [0,0]
 
 TURN_HEADING = 0.15 # Target heading when turning
 TURN_TARGET = 30 # How much to adjust when targeting a lane (higher = smoother)

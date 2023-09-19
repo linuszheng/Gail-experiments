@@ -7,7 +7,7 @@ from highway_env.vehicle.kinematics import Vehicle
 from highway_env import utils
 from typing import Dict, Text
 from gym.utils import seeding
-from settings import pv_stddev
+from settings import pv_stddev, initialHA, initialLA
 
 
 
@@ -45,8 +45,8 @@ class Env_2d_merge(AbstractEnv):
 
     def _create_repo(self):
         self.repo = {
-            "la": [0,0],
-            "ha": 3
+            "la": initialLA,
+            "ha": initialHA
           }
 
     def _reset(self) -> None:

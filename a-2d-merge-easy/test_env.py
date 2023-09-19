@@ -13,7 +13,7 @@ from stable_baselines3.common.policies import ActorCriticPolicy
 from imitation.util.networks import RunningNorm
 from imitation.algorithms.adversarial.gail import GAIL
 from nets import MyRewardNet
-from settings import numHA, _n_timesteps, motor_model, pv_stddev
+from settings import numHA, _n_timesteps, motor_model, pv_stddev, initialHA, initialLA
 from scipy.stats import norm
 
 
@@ -26,6 +26,7 @@ _ha_column = ["HA"]
 _la_column = ["LA.steer", "LA.acc"]
 _feature_column = ["x", "vx", "l_x", "f_x", "r_x"]
 _data_path = "data"
+
 
 np.set_printoptions(suppress=True, precision=3)
 
@@ -43,7 +44,8 @@ def get_single_expert_traj(n):
   la = data[_la_column].to_numpy()
   features = data[_feature_column].to_numpy()
 
-  la = np.append(np.array([[0,0]]), la, axis=0)[:-1]    # gives obs the prev LA instead of current
+  ha = np.append(np.array([[initialHA]]), ha, axis=0)[:-1]    # gives obs the prev HA instead of current
+  la = np.append(np.array([initialLA]), la, axis=0)[:-1]    # gives obs the prev LA instead of current
   obs = np.concatenate((features, la), axis=1)
 
 
@@ -53,22 +55,30 @@ def get_single_expert_traj(n):
   next_obs = obs[1:_n_timesteps+1]
 
 
-  ha = np.array([0]*_n_timesteps)          # IGNORED IN REWARD NET
+  ha_hidden = np.array([0]*_n_timesteps)          # IGNORED IN REWARD NET
   zeros = np.array([[0]*numHA]*_n_timesteps)     # IGNORED IN REWARD NET
-  cur_obs = np.concatenate((cur_obs, zeros), axis=1)
+
+  ha = np.hstack(ha)
+  ha_one_hot = np.eye(numHA)[ha][:_n_timesteps]
+
+  obs_with_ha_gt = np.concatenate((cur_obs, ha_one_hot), axis=1)
+  obs_with_ha_hidden = np.concatenate((cur_obs, zeros), axis=1)
   next_obs = np.concatenate((next_obs, zeros), axis=1)
 
   actual_ha = data[_ha_column][:_n_timesteps].to_numpy()
   all_obs = data[:][:_n_timesteps].to_numpy()
 
 
+
+
   return {
-    "obs": cur_obs,
+    "obs": obs_with_ha_hidden,
     "next_obs": next_obs,
-    "acts": ha,
+    "acts": ha_hidden,
     "dones": dones,
     "actual_ha": actual_ha,
-    "all_obs": all_obs
+    "all_obs": all_obs,
+    "gt_obs": obs_with_ha_gt
   }
 
 
@@ -82,28 +92,47 @@ def evaluate(model, trajectories):
   sum_pred_err = 0
   sum_wrong = 0
   sum_right = 0
+  sum_pred_err3 = 0
+  sum_wrong3 = 0
+  sum_right3 = 0
   for i, traj in enumerate(trajectories):
     print(f"DATA ENV {i}")
-    for all_features, select_features, ha in zip(traj["all_obs"], traj["obs"], traj["actual_ha"]):
+    last_ha = initialHA
+    for all_features, select_features, ha in zip(traj["all_obs"], traj["gt_obs"], traj["actual_ha"]):
       predicted_ha = model.predict(select_features)
       la1 = motor_model(ha[0], all_features, select_features[5:7])
       la2 = motor_model(predicted_ha[0], all_features, select_features[5:7])
-      print(f"actual: {ha[0]} ---- pred: {predicted_ha[0]}")
+      print(f"ha, pred1, pred3:             {ha[0]}", end="  ")
+      print(f"{predicted_ha[0]}", end="  ")
       la_actual = all_features[-3:-1]
       actual_err = get_err(la1[0], la_actual[0], pv_stddev[0]) + get_err(la1[1], la_actual[1], pv_stddev[1])
       pred_err = get_err(la2[0], la_actual[0], pv_stddev[0]) + get_err(la2[1], la_actual[1], pv_stddev[1])
       actual_err = max(actual_err, -10)
       pred_err = max(pred_err, -10)
-      # print()
       sum_actual_err += actual_err
       sum_pred_err += pred_err
       sum_wrong += (ha[0]!=predicted_ha[0])
       sum_right += (ha[0]==predicted_ha[0])
-  print("AVG ACTUAL ERR " + str(sum_actual_err / _n_timesteps / 30))
-  print("AVG PRED ERR " + str(sum_pred_err / _n_timesteps / 30))
-  print("ACC " + str(sum_right/(sum_right+sum_wrong)))
-  print()
-  print()
+
+      one_hot = np.zeros(4)
+      np.put(one_hot,last_ha,1)
+      obs_3 = np.concatenate((select_features[:-4], one_hot))
+      pred_ha_3 = model.predict(obs_3)
+      la3 = motor_model(pred_ha_3[0], all_features, select_features[5:7])
+      print(f"{pred_ha_3[0]}")
+      pred_err3 = get_err(la3[0], la_actual[0], pv_stddev[0]) + get_err(la3[1], la_actual[1], pv_stddev[1])
+      pred_err3 = max(pred_err3, -10)
+      sum_pred_err3 += pred_err3
+      sum_wrong3 += (ha[0]!=pred_ha_3[0])
+      sum_right3 += (ha[0]==pred_ha_3[0])
+      last_ha = pred_ha_3[0]
+
+
+  print("AVG ACTUAL ERR.               " + str(sum_actual_err / _n_timesteps / 30))
+  print("AVG PRED ERR 1.               " + str(sum_pred_err / _n_timesteps / 30))
+  print("AVG PRED ERR 3.               " + str(sum_pred_err3 / _n_timesteps / 30))
+  print("ACC 1.                        " + str(sum_right/(sum_right+sum_wrong)))
+  print("ACC 3.                        " + str(sum_right3/(sum_right3+sum_wrong3)))
 
 
 
@@ -154,20 +183,36 @@ _venv.env_method("configure", {"simulation_frequency": 24,
   "duration": _n_timesteps})
 
 
+_max_disc_acc_until_quit = 1.0
+def _learning_rate_func(progress):
+  lr_start = .0005
+  lr_end = .0001
+  lr_diff = lr_end - lr_start
+  return lr_start + progress * lr_diff
+_n_gen_train_steps = 50
+_n_disc_updates_per_round = 3
+_buf_multiplier = 2
+_policy_net_shape = dict(pi=[16, 16, 16], vf=[16, 16, 16])
+_ppo_settings = {
+  "ent_coef": 0.0005,
+  "learning_rate": _learning_rate_func,
+  "n_epochs": 30,
+  "gamma": 1,
+}
+
 
 _n_train_loops = 100000
-_n_train_steps = 40
 _learner = PPO(
     env=_venv,
     policy=ActorCriticPolicy,
     batch_size=_n_timesteps,
-    ent_coef=0.00005,
-    learning_rate=0.0005,
-    n_epochs=10,
-    gamma=.999,
+    ent_coef=_ppo_settings["ent_coef"],
+    learning_rate=_ppo_settings["learning_rate"],
+    n_epochs=_ppo_settings["n_epochs"],
+    gamma=_ppo_settings["gamma"],
     n_steps=_n_timesteps,
     policy_kwargs={
-      "net_arch": dict(pi=[16, 16, 16], vf=[16, 16, 16])
+      "net_arch": _policy_net_shape
     }
 )
 _reward_net = MyRewardNet(
@@ -179,10 +224,10 @@ _reward_net = MyRewardNet(
 )
 _gail_trainer = GAIL(
     demonstrations=_traj_train,
-    demo_batch_size=_n_timesteps,                 # cons
-    gen_replay_buffer_capacity=40,                # cons
-    gen_train_timesteps=40,                       # gen per round
-    n_disc_updates_per_round=3,                   # disc per round
+    demo_batch_size=_n_timesteps,                                         # cons
+    gen_replay_buffer_capacity=_n_gen_train_steps*_buf_multiplier,      # cons
+    gen_train_timesteps=_n_gen_train_steps,                             # gen per round
+    n_disc_updates_per_round=_n_disc_updates_per_round,                 # disc per round
     venv=_venv,
     gen_algo=_learner,
     reward_net=_reward_net,
@@ -192,9 +237,11 @@ evaluate(_learner, _traj_all)
 sanity(_learner)
 for i in range(_n_train_loops):
     print("LOOP # "+str(i))
-    _gail_trainer.train(_n_train_steps)           # total rounds = _n_train_steps / gen_train_timesteps
+    train_info = _gail_trainer.train(_n_gen_train_steps)
     evaluate(_learner, _traj_all)
     sanity(_learner)
-
+    if train_info["disc_acc"]>=_max_disc_acc_until_quit:
+      print(f"discriminator accuracy too high ({train_info['disc_acc']:.3f}>={_max_disc_acc_until_quit:.3f}). subsequent signals are not useful. terminating program.")
+      quit()
 
 
