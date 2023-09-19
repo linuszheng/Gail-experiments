@@ -201,6 +201,20 @@ _ppo_settings = {
 }
 
 
+
+
+# GPU ----------------------------------------------------------------------------
+import os
+os.environ['CUDA_VISIBLE_DEVICES'] = "4,5,6,7"
+import torch
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+print('Using device:', device)
+print()
+
+
+
+
+# train --------------------------------------------------------------------------------
 _n_train_loops = 100000
 _learner = PPO(
     env=_venv,
@@ -211,6 +225,7 @@ _learner = PPO(
     n_epochs=_ppo_settings["n_epochs"],
     gamma=_ppo_settings["gamma"],
     n_steps=_n_timesteps,
+    device=device,
     policy_kwargs={
       "net_arch": _policy_net_shape
     }
