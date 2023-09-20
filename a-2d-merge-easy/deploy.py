@@ -1,36 +1,41 @@
+from multiprocessing import Process, Queue
 import os
 
 
 
+free_cores = [4, 5, 6]
+n_threads_per_core = 15
+  
+
+
+def run_job(q, gpu_i):
+    print("process started")
+    print(f"using gpu {gpu_i}")
+    while q:
+        config = q.get()
+        print("config "+str(config))
+        os.system(f"screen -dm -L -Logfile out/out{config}.txt python test_env.py -g {gpu_i}")
+    print("process done")
+
+  
+if __name__ == '__main__':
+
+    q = Queue()
+    configs = list(range(45))
+
+    for config in configs:
+        q.put(config)
+
+
+    processes = []
+    for gpu_i in free_cores:
+        for _ in range(n_threads_per_core):
+            p = Process(target=run_job, args=(q, gpu_i))
+            processes.append(p)
+            p.start()
+    for p in processes:
+        p.join()
 
 
 
-num_threads = 4
 
-
-os.system("screen -L -Logfile out9.txt python test_env.py")
-
-
-
-import threading
-import queue
-
-q = queue.Queue()
-
-def worker():
-    while True:
-        item = q.get()
-        print(f'Working on {item}')
-        print(f'Finished {item}')
-        q.task_done()
-
-# Turn-on the worker thread.
-threading.Thread(target=worker, daemon=True).start()
-
-# Send thirty task requests to the worker.
-for item in range(30):
-    q.put(item)
-
-# Block until all tasks are done.
-q.join()
-print('All work completed')

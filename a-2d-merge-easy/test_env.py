@@ -204,10 +204,22 @@ _ppo_settings = {
 
 
 # GPU ----------------------------------------------------------------------------
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument('-g', '--gpu')
+parser_output = parser.parse_args()
+gpu_i = int(parser_output.gpu)
+
 import os
-os.environ['CUDA_VISIBLE_DEVICES'] = "4,5,6,7"
 import torch
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+device = None
+if gpu_i==None:
+  device = torch.device('cpu')
+elif gpu_i in range(8):
+  device = torch.device(f'cuda:{gpu_i}')
+else:
+  print("gpu num out of range")
 print('Using device:', device)
 print()
 
