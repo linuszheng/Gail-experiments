@@ -16,7 +16,7 @@ pv_range = [
     [-0.3, 0.3],
     [-30, 30]
 ]
-pv_stddev = [0.005, 0.5]
+pv_stddev = [0.01, 1.0]
 
 numHA = 4
 _n_timesteps = 74

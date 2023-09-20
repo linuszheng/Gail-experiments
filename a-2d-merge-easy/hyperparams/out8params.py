@@ -14,3 +14,5 @@ _ppo_settings = {
   "n_epochs": 30,
   "gamma": 1,
 }
+
+# RESULT: PEAK ACCURACY 74% THEN MODE COLLAPSE

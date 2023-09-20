@@ -14,3 +14,5 @@ _ppo_settings = {
   "n_epochs": 10,
   "gamma": .99,
 }
+
+# RESULT: CONVERGENCE TOO SLOW
