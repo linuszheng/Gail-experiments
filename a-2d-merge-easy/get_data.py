@@ -76,6 +76,7 @@ print("0: ACC")
 print("1: DEC")
 print("2: DEC+LEFT")
 print("3: DEC+RIGHT")
+print()
 
 for prop in props:
   prop.pretty_print()
@@ -86,3 +87,6 @@ if should_write_to_file:
   for prop in props:
     prop.file_write(summary)
 
+print()
+print(f"timesteps elapsed: {len(props[0].values)-1}")
+print()

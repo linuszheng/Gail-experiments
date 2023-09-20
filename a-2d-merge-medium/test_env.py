@@ -40,7 +40,7 @@ def get_single_expert_df(n):
   return pd.read_csv(_data_path+f"/data{n}.csv", skipinitialspace=True)
 def get_single_expert_traj(n):
   data = get_single_expert_df(n)
-  ha = data[_ha_column].to_numpy().astype(int)
+  ha = data[_ha_column].to_numpy()
   la = data[_la_column].to_numpy()
   features = data[_feature_column].to_numpy()
 
@@ -158,8 +158,12 @@ _env_test = gym.make("merge-v0", config={"simulation_frequency": 24,
 def sanity(model):
   print("SANITY")
   prev_obs = _env_test.reset()
+  ha_chosen = [0]*numHA
+  timesteps_survived = 0
   for i in range(0,_n_timesteps):
     predicted_action = model.predict(prev_obs)[0]
+    ha_chosen[predicted_action] += 1
+    timesteps_survived += 1
     print(predicted_action)
     cur_state = _env_test.step(predicted_action)
     prev_obs = cur_state[0]
@@ -170,7 +174,11 @@ def sanity(model):
       print("OFF ROAD")
       break
     print([float(f"{num:.3f}") for num in prev_obs])
+  ha_chosen = [float(val) / float(timesteps_survived) for val in ha_chosen]
+  print("distribution of HA choices")
+  print(ha_chosen)
   print()
+  return max(ha_chosen)
 
 
 
@@ -184,22 +192,22 @@ _venv.env_method("configure", {"simulation_frequency": 24,
 
 
 _max_disc_acc_until_quit = 1.0
+_max_mode_until_quit = 1.0
 def _learning_rate_func(progress):
-  lr_start = .0006
-  lr_end = .0001
+  lr_start = .0005
+  lr_end = .0003
   lr_diff = lr_end - lr_start
   return lr_start + progress * lr_diff
-_n_gen_train_steps = 50
+_n_gen_train_steps = 60
 _n_disc_updates_per_round = 3
 _buf_multiplier = 2
 _policy_net_shape = dict(pi=[16, 16, 16], vf=[16, 16, 16])
 _ppo_settings = {
-  "ent_coef": 0.0005,
+  "ent_coef": 0.0010,
   "learning_rate": _learning_rate_func,
-  "n_epochs": 30,
+  "n_epochs": 40,
   "gamma": 1,
 }
-
 
 
 
@@ -268,9 +276,13 @@ for i in range(_n_train_loops):
     print("LOOP # "+str(i))
     train_info = _gail_trainer.train(_n_gen_train_steps)
     evaluate(_learner, _traj_all)
-    sanity(_learner)
+    mode_percentage = sanity(_learner)
     if train_info["disc_acc"]>=_max_disc_acc_until_quit:
-      print(f"discriminator accuracy too high ({train_info['disc_acc']:.3f}>={_max_disc_acc_until_quit:.3f}). subsequent signals are not useful. terminating program.")
+      print(f"FALSE CONVERGENCE ({train_info['disc_acc']:.3f}>={_max_disc_acc_until_quit:.3f}). terminating program.")
       quit()
+    if mode_percentage>=_max_mode_until_quit:
+      print(f"MODE COLLAPSE ({mode_percentage}>={_max_mode_until_quit:.3f}). terminating program.")
+      quit()
+
 
 

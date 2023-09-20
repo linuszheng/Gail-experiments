@@ -1,3 +1,5 @@
+# OUT C AND OUT B SAME
+
 
 _max_disc_acc_until_quit = 1.0
 def _learning_rate_func(progress):
