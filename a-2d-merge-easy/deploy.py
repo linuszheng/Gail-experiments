@@ -3,8 +3,8 @@ import os
 
 
 
-free_cores = [4, 5, 6]
-n_threads_per_core = 15
+free_cores = [4, 5, 6, 7]
+n_threads_per_core = 10
   
 
 
@@ -14,14 +14,14 @@ def run_job(q, gpu_i):
     while q:
         config = q.get()
         print("config "+str(config))
-        os.system(f"screen -dm -L -Logfile out/out{config}.txt python test_env.py -g {gpu_i}")
+        os.system(f"screen -Dm -L -Logfile out/out{config}.txt python test_env.py -g {gpu_i}")
     print("process done")
 
   
 if __name__ == '__main__':
 
     q = Queue()
-    configs = list(range(45))
+    configs = list(range(100))
 
     for config in configs:
         q.put(config)
