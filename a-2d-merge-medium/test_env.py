@@ -43,6 +43,9 @@ def get_single_expert_traj(n):
   ha = data[_ha_column].to_numpy()
   la = data[_la_column].to_numpy()
   features = data[_feature_column].to_numpy()
+  all_obs = data[:][:_n_timesteps].to_numpy()
+  # features = np.log1p(features)
+  # all_obs = np.log1p(all_obs)
 
   ha = np.append(np.array([[initialHA]]), ha, axis=0)[:-1]    # gives obs the prev HA instead of current
   la = np.append(np.array([initialLA]), la, axis=0)[:-1]    # gives obs the prev LA instead of current
@@ -66,7 +69,6 @@ def get_single_expert_traj(n):
   next_obs = np.concatenate((next_obs, zeros), axis=1)
 
   actual_ha = data[_ha_column][:_n_timesteps].to_numpy()
-  all_obs = data[:][:_n_timesteps].to_numpy()
 
 
 
@@ -195,7 +197,7 @@ _venv.env_method("configure", {"simulation_frequency": 24,
 _max_disc_acc_until_quit = 1.0
 _max_mode_until_quit = 1.0
 def _learning_rate_func(progress):
-  lr_start = .0008
+  lr_start = .0006
   lr_end = .0003
   lr_diff = lr_end - lr_start
   return lr_start + progress * lr_diff
@@ -204,12 +206,12 @@ _n_disc_updates_per_round = 3
 _buf_multiplier = 1
 _policy_net_shape = dict(pi=[16, 16, 16], vf=[16, 16, 16])
 _ent_coef_lo = .0005
-_ent_coef_hi = .0030
+_ent_coef_hi = .0020
 _ent_coef_slope_start = .8
 _ppo_settings = {
   "ent_coef": _ent_coef_lo,
   "learning_rate": _learning_rate_func,
-  "n_epochs": 30,
+  "n_epochs": 50,
   "gamma": 1,
 }
 
