@@ -42,9 +42,15 @@ class Prop:
       print(min(self.values))
       print(max(self.values))
     print()
-  def file_write(self, summary_file):
+  def file_write_vis_info(self, summary_file):
     summary_file.write(self.label+"\n")
     summary_file.write(", ".join(str(num) for num in self.values))
+    summary_file.write("\n\n")
+  def file_write_misc_info(self, summary_file):
+    summary_file.write(self.label+": minimum and maximum\n")
+    if self.values:
+      summary_file.write(f"{min(self.values)}\n")
+      summary_file.write(f"{max(self.values)}\n")
     summary_file.write("\n")
   
 
@@ -91,7 +97,10 @@ for prop in props:
 if should_write_to_file:
   summary = open("experiments/out-"+data_src_path+"-summary.txt", "w")
   for prop in props:
-    prop.file_write(summary)
+    prop.file_write_vis_info(summary)
+  for prop in props:
+    prop.file_write_misc_info(summary)
+
 
 print(f"timesteps elapsed: {len(props[0].values)-1}")
 print(terminated_line)
