@@ -16,7 +16,7 @@ import re
 re_anything = ".+?"
 re_float = "(-?\d+\.\d+)"
 
-f = open(data_src_path+".txt")
+f = open("experiments/out-"+data_src_path+".txt")
 
 class Prop:
   def __init__(self, label, re_selector, only_if_mean=False):
@@ -37,8 +37,9 @@ class Prop:
       print(elem)
   def display_minmax(self):
     print(self.label+": minimum and maximum")
-    print(min(self.values))
-    print(max(self.values))
+    if self.values:
+      print(min(self.values))
+      print(max(self.values))
   def file_write(self, summary_file):
     summary_file.write(self.label+"\n")
     summary_file.write(", ".join(str(num) for num in self.values))
@@ -51,6 +52,7 @@ props.append(Prop("log obs of generated LA on dataset", 'AVG PRED ERR 3. '))
 props.append(Prop("accuracy of generated HA on dataset", 'ACC 3. '))
 
 is_mean = True
+terminated = False
 while True:
   line = f.readline()
   if re.findall('raw\/', line):
@@ -61,7 +63,9 @@ while True:
     for prop in props:
       if prop.check_for_value(line, is_mean):
         break
-    if not line:
+    if re.findall('terminating program', line):
+      terminated = True
+    elif not line:
       break
     
 
@@ -76,13 +80,19 @@ print("0: ACC")
 print("1: DEC")
 print("2: DEC+LEFT")
 print("3: DEC+RIGHT")
+print()
 
 for prop in props:
   prop.pretty_print()
 for prop in props:
   prop.display_minmax()
 if should_write_to_file:
-  summary = open("summaries/summary_"+data_src_path+".txt", "w")
+  summary = open("experiments/out-"+data_src_path+"-summary.txt", "w")
   for prop in props:
     prop.file_write(summary)
+
+print()
+print(f"timesteps elapsed: {len(props[0].values)-1}")
+print(f"program terminated?: {terminated}")
+print()
 

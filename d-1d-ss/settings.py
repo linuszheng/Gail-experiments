@@ -4,8 +4,8 @@ import numpy as np
 training_set = 10
 validation_set = 30 # including training_set
 
-folder = "merge-easy-data/"
-# folder = "merge-medium-data/"
+# folder = "merge-easy-data/"
+folder = "merge-medium-data/"
 # folder = "merge-hard-data/"
 # folder = "merge-impossible-data/"
 
@@ -16,7 +16,7 @@ pv_range = [
     [-0.3, 0.3],
     [-30, 30]
 ]
-pv_stddev = [0.005, 0.5]
+pv_stddev = [0.01, 1.0]
 
 numHA = 4
 _n_timesteps = 74

@@ -52,7 +52,7 @@ props.append(Prop("log obs of generated LA on dataset", 'AVG PRED ERR 3. '))
 props.append(Prop("accuracy of generated HA on dataset", 'ACC 3. '))
 
 is_mean = True
-terminated = False
+terminated_line = "not terminated"
 while True:
   line = f.readline()
   if re.findall('raw\/', line):
@@ -64,7 +64,7 @@ while True:
       if prop.check_for_value(line, is_mean):
         break
     if re.findall('terminating program', line):
-      terminated = True
+      terminated_line = line
     elif not line:
       break
     
@@ -93,6 +93,6 @@ if should_write_to_file:
 
 print()
 print(f"timesteps elapsed: {len(props[0].values)-1}")
-print(f"program terminated?: {terminated}")
+print(terminated_line)
 print()
 
