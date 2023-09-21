@@ -35,11 +35,13 @@ class Prop:
     print(self.label)
     for elem in self.values:
       print(elem)
+    print()
   def display_minmax(self):
     print(self.label+": minimum and maximum")
     if self.values:
       print(min(self.values))
       print(max(self.values))
+    print()
   def file_write(self, summary_file):
     summary_file.write(self.label+"\n")
     summary_file.write(", ".join(str(num) for num in self.values))
@@ -47,8 +49,8 @@ class Prop:
   
 
 props = []
-props.append(Prop("discriminator accuracy", 'disc/disc_acc ', True))
 props.append(Prop("log obs of generated LA on dataset", 'AVG PRED ERR 3. '))
+props.append(Prop("discriminator accuracy", 'disc/disc_acc ', True))
 props.append(Prop("accuracy of generated HA on dataset", 'ACC 3. '))
 
 is_mean = True
@@ -91,7 +93,6 @@ if should_write_to_file:
   for prop in props:
     prop.file_write(summary)
 
-print()
 print(f"timesteps elapsed: {len(props[0].values)-1}")
 print(terminated_line)
 print()

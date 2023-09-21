@@ -15,9 +15,11 @@ from gail import GAIL
 from nets import MyRewardNet
 from settings import numHA, _n_timesteps, motor_model, pv_stddev, initialHA, initialLA
 from scipy.stats import norm
+import torch
 from hyperparams import _max_disc_acc_until_quit, _max_mode_until_quit, _learning_rate_func, \
 _n_gen_train_steps, _n_disc_updates_per_round, _buf_multiplier, _policy_net_shape, \
 _ent_coef_lo, _ent_coef_hi, _ent_coef_slope_start, _ppo_settings
+
 
 
 import warnings
@@ -200,24 +202,15 @@ _venv.env_method("configure", {"simulation_frequency": 24,
 
 
 # GPU ----------------------------------------------------------------------------
-import argparse
-
-parser = argparse.ArgumentParser()
-parser.add_argument('-g', '--gpu')
-parser_output = parser.parse_args()
-gpu_i = parser_output.gpu
-if gpu_i:
-  gpu_i = int(gpu_i)
-
-import os
 import torch
-device = None
-if gpu_i==None:
-  device = torch.device('cpu')
-elif gpu_i in range(8):
-  device = torch.device(f'cuda:{gpu_i}')
-else:
-  print("gpu num out of range")
+
+mem_amount = [0]*4
+gpus_avail = [4, 5, 6, 7]
+for i in range(4):
+  mem_amount[i] = torch.cuda.mem_get_info(gpus_avail[i])
+  print(f"gpu {gpus_avail[i]} has {mem_amount[i]} mem available")
+chosen_gpu = gpus_avail[mem_amount.index(max(mem_amount))]
+device = torch.device(f'cuda:{chosen_gpu}')
 print('Using device:', device)
 print()
 
