@@ -4,8 +4,8 @@ import numpy as np
 training_set = 10
 validation_set = 30 # including training_set
 
-folder = "merge-easy-data/"
-# folder = "merge-medium-data/"
+# folder = "merge-easy-data/"
+folder = "merge-medium-data/"
 # folder = "merge-hard-data/"
 # folder = "merge-impossible-data/"
 

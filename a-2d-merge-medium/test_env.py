@@ -39,7 +39,7 @@ np.set_printoptions(suppress=True, precision=3)
 def get_single_expert_df(n):
   return pd.read_csv(_data_path+f"/data{n}.csv", skipinitialspace=True)
 def get_single_expert_traj(n):
-  data = get_single_expert_df(n)
+  data = get_single_expert_df(n).astype({"HA": int})
   ha = data[_ha_column].to_numpy()
   la = data[_la_column].to_numpy()
   features = data[_feature_column].to_numpy()
@@ -175,6 +175,7 @@ def sanity(model):
       break
     print([float(f"{num:.3f}") for num in prev_obs])
   ha_chosen = [float(val) / float(timesteps_survived) for val in ha_chosen]
+  print()
   print("distribution of HA choices")
   print(ha_chosen)
   print()
@@ -194,18 +195,21 @@ _venv.env_method("configure", {"simulation_frequency": 24,
 _max_disc_acc_until_quit = 1.0
 _max_mode_until_quit = 1.0
 def _learning_rate_func(progress):
-  lr_start = .0005
+  lr_start = .0008
   lr_end = .0003
   lr_diff = lr_end - lr_start
   return lr_start + progress * lr_diff
-_n_gen_train_steps = 60
+_n_gen_train_steps = 50
 _n_disc_updates_per_round = 3
-_buf_multiplier = 2
+_buf_multiplier = 1
 _policy_net_shape = dict(pi=[16, 16, 16], vf=[16, 16, 16])
+_ent_coef_lo = .0005
+_ent_coef_hi = .0030
+_ent_coef_slope_start = .8
 _ppo_settings = {
-  "ent_coef": 0.0010,
+  "ent_coef": _ent_coef_lo,
   "learning_rate": _learning_rate_func,
-  "n_epochs": 40,
+  "n_epochs": 30,
   "gamma": 1,
 }
 
@@ -278,11 +282,15 @@ for i in range(_n_train_loops):
     evaluate(_learner, _traj_all)
     mode_percentage = sanity(_learner)
     if train_info["disc_acc"]>=_max_disc_acc_until_quit:
-      print(f"FALSE CONVERGENCE ({train_info['disc_acc']:.3f}>={_max_disc_acc_until_quit:.3f}). terminating program.")
+      print(f"FALSE CONVERGENCE ({train_info['disc_acc']:.5f}>={_max_disc_acc_until_quit:.5f}). terminating program.")
       quit()
     if mode_percentage>=_max_mode_until_quit:
-      print(f"MODE COLLAPSE ({mode_percentage}>={_max_mode_until_quit:.3f}). terminating program.")
+      print(f"MODE COLLAPSE ({mode_percentage:.5f}>={_max_mode_until_quit:.5f}). terminating program.")
       quit()
-
-
+    if mode_percentage>=_ent_coef_slope_start:
+      print(f"NEAR MODE COLLAPSE ({mode_percentage:.5f}>={_ent_coef_slope_start:.5f}). RAISE ENTROPY")
+      dif_percentage = (mode_percentage-_ent_coef_slope_start)/(1-_ent_coef_slope_start)
+      _learner.ent_coef = _ent_coef_lo + dif_percentage*(_ent_coef_hi-_ent_coef_lo)
+    else:
+      _learner.ent_coef = _ent_coef_lo
 
