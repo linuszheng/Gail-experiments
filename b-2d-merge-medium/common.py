@@ -123,6 +123,7 @@ class AdversarialTrainer(base.DemonstrationAlgorithm[types.Transitions]):
         init_tensorboard_graph: bool = False,
         debug_use_ground_truth: bool = False,
         allow_variable_horizon: bool = False,
+        n_real_to_fake_label_flip: int = 0
     ):
         """Builds AdversarialTrainer.
 
@@ -213,6 +214,8 @@ class AdversarialTrainer(base.DemonstrationAlgorithm[types.Transitions]):
             self._reward_net.parameters(),
             **self._disc_opt_kwargs,
         )
+
+        self.n_real_to_fake_label_flip = n_real_to_fake_label_flip
 
         if self._init_tensorboard:
             logging.info(f"building summary directory at {self._log_dir}")
@@ -589,8 +592,8 @@ class AdversarialTrainer(base.DemonstrationAlgorithm[types.Transitions]):
             # labelled with 1 and generator samples with 0.
             labels_expert_is_one = np.concatenate(
                 [
-                    np.ones(self.demo_minibatch_size, dtype=int),
-                    np.zeros(self.demo_minibatch_size, dtype=int),
+                    np.ones(self.demo_minibatch_size - self.n_real_to_fake_label_flip, dtype=int),
+                    np.zeros(self.demo_minibatch_size + self.n_real_to_fake_label_flip, dtype=int),
                 ],
             )
 

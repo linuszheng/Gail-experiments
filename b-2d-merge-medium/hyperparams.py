@@ -19,3 +19,4 @@ _ppo_settings = {
   "n_epochs": 40,
   "gamma": 1,
 }
+_n_real_to_fake_label_flip = 10    # effect proportional to batch size

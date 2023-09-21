@@ -20,6 +20,13 @@ from hyperparams import _max_disc_acc_until_quit, _max_mode_until_quit, _learnin
 _n_gen_train_steps, _n_disc_updates_per_round, _buf_multiplier, _policy_net_shape, \
 _ent_coef_lo, _ent_coef_hi, _ent_coef_slope_start, _ppo_settings
 
+m_n_real_to_fake_label_flip = 0
+try:
+  from hyperparams import _n_real_to_fake_label_flip
+  m_n_real_to_fake_label_flip = _n_real_to_fake_label_flip
+except:
+  pass
+
 
 
 import warnings
@@ -249,6 +256,7 @@ _gail_trainer = GAIL(
     venv=_venv,
     gen_algo=_learner,
     reward_net=_reward_net,
+    n_real_to_fake_label_flip=m_n_real_to_fake_label_flip
 )
 
 evaluate(_learner, _traj_all)

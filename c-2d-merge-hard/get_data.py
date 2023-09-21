@@ -6,9 +6,11 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('-i', '--input')
 parser.add_argument('-w', '--write', action='store_const', const=True, default=False)
+parser.add_argument('-p', '--print', action='store_const', const=True, default=False)
 parser_output = parser.parse_args()
 data_src_path = parser_output.input
 should_write_to_file = parser_output.write
+should_print = parser_output.print
 
 
 
@@ -83,17 +85,28 @@ while True:
 
 
 
+if should_print:
+  print("0: ACC")
+  print("1: DEC")
+  print("2: DEC+LEFT")
+  print("3: DEC+RIGHT")
+  print()
 
-print("0: ACC")
-print("1: DEC")
-print("2: DEC+LEFT")
-print("3: DEC+RIGHT")
-print()
+  for prop in props:
+    prop.pretty_print()
 
-for prop in props:
-  prop.pretty_print()
+
+ # important - print each time
 for prop in props:
   prop.display_minmax()
+
+print(f"timesteps elapsed: {len(props[0].values)-1}")
+print(terminated_line)
+print()
+
+
+
+
 if should_write_to_file:
   summary = open("experiments/out-"+data_src_path+"-summary.txt", "w")
   for prop in props:
@@ -102,7 +115,4 @@ if should_write_to_file:
     prop.file_write_misc_info(summary)
 
 
-print(f"timesteps elapsed: {len(props[0].values)-1}")
-print(terminated_line)
-print()
 
