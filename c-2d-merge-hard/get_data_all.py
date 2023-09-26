@@ -1,7 +1,7 @@
 import os
 import re
 
-re_data = "out-([a-zA-Z_]+)\.txt"
+re_data = "out-([a-zA-Z1-9_]+)\.txt"
 
 exp_list = []
 all_files = os.listdir("experiments")
@@ -10,7 +10,13 @@ data_files = []
 for d in data_files_unproc:
   if d:
     data_files.append(d[0])
+data_files = sorted(data_files)
+print("Available experiments:")
 print(data_files)
+print()
 
 for d in data_files:
+  print("----------")
+  print(f"EXPERIMENT {d}")
   os.system(f"python get_data.py -wi "+d)
+  print("----------")

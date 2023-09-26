@@ -4,10 +4,6 @@ import numpy as np
 training_set = 10
 validation_set = 30 # including training_set
 
-# folder = "merge-easy-data/"
-# folder = "merge-medium-data/"
-folder = "merge-hard-data/"
-# folder = "merge-impossible-data/"
 
 feature_indices = [0, 2, 5, 10, 15]
 
@@ -16,7 +12,7 @@ pv_range = [
     [-0.3, 0.3],
     [-30, 30]
 ]
-pv_stddev = [0.02, 2.0]
+pv_stddev = [0.03, 3.0]
 
 numHA = 4
 _n_timesteps = 74
