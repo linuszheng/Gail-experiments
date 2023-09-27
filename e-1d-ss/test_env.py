@@ -35,8 +35,8 @@ warnings.filterwarnings("ignore")
 
 _rng = np.random.default_rng()
 _ha_column = ["HA"]
-_la_column = ["LA.steer", "LA.acc"]
-_feature_column = ["x", "vx", "l_x", "f_x", "r_x"]
+_la_column = ["LA.acc"]
+_feature_column = ["pos", "decMax", "accMax", "vMax", "vel", "target"]
 _data_path = "data"
 
 
