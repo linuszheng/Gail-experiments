@@ -61,7 +61,8 @@ def get_all_pred_ha():
 
 
 def get_err(a_, b_, stdev_):
-  res = [np.log(1-norm.pdf(abs(a-b)/stdev)) for a, b, stdev in zip(a_, b_, stdev_)]
+  # res = [np.log(norm.pdf((a-b)/stdev)) for a, b, stdev in zip(a_, b_, stdev_)]
+  res = [norm(a, stdev).logpdf(b) for a, b, stdev in zip(a_, b_, stdev_)]
   return sum(res)
 
 
