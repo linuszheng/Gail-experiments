@@ -4,6 +4,7 @@
 training_set = 10
 validation_set = 30
 
+n_timesteps = 125
 
 pv_range = [[-50, 50]]
 pv_stddev = [0.5]
@@ -16,7 +17,7 @@ initialLA = [0]
 numHA = 3
 
 
-la_idex_wrt_lim_obs = [6]
+la_idx_wrt_lim_obs = [6]
 features_idx = [0, 1, 2, 3, 4, 5]
 
 

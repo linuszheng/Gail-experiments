@@ -13,12 +13,12 @@ class Env_1d(gym.Env):
       self.acc = 0.
       self.prev_acc = 0.
       self.prev_ha = 0.
-      self.decMax = -5.
-      self.accMax = 6.
-      self.vMax = 10.
-      self.target = 100.
-      self.observation_space = spaces.Box( low=np.array([0, -60, 0, 0, 0, 100]+[-3]+[0,0,0]), 
-                                  high=np.array([200, 0, 60, 120, 120, 200]+[3]+[1,1,1]), 
+      self.decMax = 0.
+      self.accMax = 0.
+      self.vMax = 0.
+      self.target = 0.
+      self.observation_space = spaces.Box( low=np.array([0, -40, 0, 0, 0, 100]+[-50]+[0,0,0]), 
+                                  high=np.array([150, 0, 40, 250, 250, 100]+[50]+[1,1,1]), 
                                   shape=(10,), dtype=np.float32)
       self.action_space = spaces.Discrete(3)
       self.t = 0
@@ -54,10 +54,9 @@ class Env_1d(gym.Env):
       return self._get_obs()
 
     def step(self, action):
-      self.prev_ha = action[0]
       prev_vel = self.vel
-      # self.acc = action[0] + np.random.normal(0, 1)
-      self.acc = self.motor_model_possibilities[action[0]]
+      self.ha = action[0]
+      self.acc = self.motor_model_possibilities[action[0]] + norm.sample(0, 0.3)
       self.vel = self.vel+self.acc*self.dt
       if self.vel < EPSILON:
         self.vel = 0

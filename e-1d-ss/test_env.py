@@ -1,7 +1,6 @@
 
 import gym
 from highway_env.envs import highway_env
-import my_spaces
 from gym.envs.registration import register
 import pandas as pd
 import numpy as np
@@ -13,7 +12,7 @@ from stable_baselines3.common.policies import ActorCriticPolicy
 from imitation.util.networks import RunningNorm
 from gail import GAIL
 from nets import MyRewardNet
-from settings import numHA, n_timesteps, motor_model, pv_stddev, initialHA, initialLA, la_idx_wrt_lim_obs, ha_idx, features_idx
+from settings import numHA, n_timesteps, motor_model, pv_stddev, initialHA, initialLA, la_idx_wrt_lim_obs, features_idx
 from scipy.stats import norm
 import torch
 from hyperparams import _max_disc_acc_until_quit, _max_mode_until_quit, _learning_rate_func, \
@@ -49,7 +48,7 @@ def get_single_expert_traj(n):
   ha = data[_ha_column].to_numpy()
   la = data[_la_column].to_numpy()
   features = data[_feature_column].to_numpy()
-  all_obs = data[:][:_n_timesteps].to_numpy()
+  all_obs = data[:][:n_timesteps].to_numpy()
 
   ha = np.append(np.array([[initialHA]]), ha, axis=0)[:-1]    # gives obs the prev HA instead of current
   la = np.append(np.array([initialLA]), la, axis=0)[:-1]    # gives obs the prev LA instead of current
@@ -57,22 +56,22 @@ def get_single_expert_traj(n):
 
 
 
-  dones = np.array([False]*_n_timesteps)
-  cur_obs = obs[:_n_timesteps]
-  next_obs = obs[1:_n_timesteps+1]
+  dones = np.array([False]*n_timesteps)
+  cur_obs = obs[:n_timesteps]
+  next_obs = obs[1:n_timesteps+1]
 
 
-  ha_hidden = np.array([0]*_n_timesteps)          # IGNORED IN REWARD NET
-  zeros = np.array([[0]*numHA]*_n_timesteps)     # IGNORED IN REWARD NET
+  ha_hidden = np.array([0]*n_timesteps)          # IGNORED IN REWARD NET
+  zeros = np.array([[0]*numHA]*n_timesteps)     # IGNORED IN REWARD NET
 
   ha = np.hstack(ha)
-  ha_one_hot = np.eye(numHA)[ha][:_n_timesteps]
+  ha_one_hot = np.eye(numHA)[ha][:n_timesteps]
 
   obs_with_ha_gt = np.concatenate((cur_obs, ha_one_hot), axis=1)
   obs_with_ha_hidden = np.concatenate((cur_obs, zeros), axis=1)
   next_obs = np.concatenate((next_obs, zeros), axis=1)
 
-  actual_ha = data[_ha_column][:_n_timesteps].to_numpy()
+  actual_ha = data[_ha_column][:n_timesteps].to_numpy()
 
 
 
@@ -134,7 +133,7 @@ def evaluate(model, trajectories):
 _traj_train = [get_single_expert_traj(i) for i in range(10)]
 _traj_all = [get_single_expert_traj(i) for i in range(30)]
 
-register(id="env-v0", entry_point='custom_envs.envs:Env')
+register(id="env-v0", entry_point='custom_envs.envs:Env_1d')
 
 
 _env_test = gym.make("env-v0")
@@ -146,7 +145,7 @@ _env_test = gym.make("env-v0")
 def sanity(model):
   print("SANITY")
   prev_obs = _env_test.reset()
-  for i in range(0,_n_timesteps):
+  for i in range(0,n_timesteps):
     predicted_action = model.predict(prev_obs)[0]
     print(predicted_action)
     cur_state = _env_test.step(predicted_action)
@@ -162,13 +161,8 @@ def sanity(model):
 
 
 
-_venv = make_vec_env("merge-v0", n_envs=10, rng=_rng)
-_venv.env_method("configure", {"simulation_frequency": 24,
-  "policy_frequency": 8,
-  "lanes_count": 6,
-  "initial_lane_id": 0,
-  'vehicles_count': 50,
-  "duration": _n_timesteps})
+_venv = make_vec_env("env-v0", n_envs=10, rng=_rng)
+_venv.env_method("config", -10, 10, 10, 100)
 
 
 
@@ -193,12 +187,12 @@ _n_train_loops = 100000
 _learner = PPO(
     env=_venv,
     policy=ActorCriticPolicy,
-    batch_size=_n_timesteps,
+    batch_size=n_timesteps,
     ent_coef=_ppo_settings["ent_coef"],
     learning_rate=_ppo_settings["learning_rate"],
     n_epochs=_ppo_settings["n_epochs"],
     gamma=_ppo_settings["gamma"],
-    n_steps=_n_timesteps,
+    n_steps=n_timesteps,
     device=device,
     policy_kwargs={
       "net_arch": _policy_net_shape
@@ -213,7 +207,7 @@ _reward_net = MyRewardNet(
 )
 _gail_trainer = GAIL(
     demonstrations=_traj_train,
-    demo_batch_size=_n_timesteps,                                         # cons
+    demo_batch_size=n_timesteps,                                         # cons
     gen_replay_buffer_capacity=_n_gen_train_steps*_buf_multiplier,      # cons
     gen_train_timesteps=_n_gen_train_steps,                             # gen per round
     n_disc_updates_per_round=_n_disc_updates_per_round,                 # disc per round
