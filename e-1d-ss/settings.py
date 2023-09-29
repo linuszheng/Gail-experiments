@@ -18,6 +18,7 @@ numHA = 3
 
 
 la_idx_wrt_lim_obs = [6]
+la_idx_wrt_all_obs = [1]
 features_idx = [0, 1, 2, 3, 4, 5]
 
 
@@ -25,9 +26,9 @@ def motor_model(ha, data, data_prev):
     if ha == 0:
         return [min(data_prev[6] + 1, data[2])]
     elif ha == 1:
-        if data_prev[0] < 0:
+        if data_prev[6] < 0:
             return [min(data_prev[6] + 1, data[2])]
-        elif data_prev[0] > 0:
+        elif data_prev[6] > 0:
             return [max(data_prev[6] - 1, data[1])]
     else:
         return [max(data_prev[6] - 1, data[1])]

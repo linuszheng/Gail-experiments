@@ -1,6 +1,8 @@
 import numpy as np
 import gym
 from gym import spaces
+from settings import numHA, n_timesteps, pv_stddev
+
 
 EPSILON = 10E-10
 
@@ -12,7 +14,7 @@ class Env_1d(gym.Env):
       self.vel = 0.
       self.acc = 0.
       self.prev_acc = 0.
-      self.prev_ha = 0.
+      self.prev_ha = 0
       self.decMax = 0.
       self.accMax = 0.
       self.vMax = 0.
@@ -39,9 +41,10 @@ class Env_1d(gym.Env):
       return [acc0, acc1, acc2]
 
     def _get_obs(self):
-      one_hot = self.prev_ha
-      return np.array([self.pos, self.decMax, self.accMax, self.vMax, self.vel, self.target] 
-      + self.acc + one_hot, dtype=np.float64)
+      one_hot = np.eye(numHA)[self.prev_ha]
+      lim_obs = [self.pos, self.decMax, self.accMax, self.vMax, self.vel, self.target, self.acc]
+      lim_obs.extend(one_hot)
+      return np.array(lim_obs, dtype=np.float32)
 
 
     def reset(self, seed=None, options=None):
@@ -50,13 +53,13 @@ class Env_1d(gym.Env):
       self.vel = 0.
       self.acc = 0.
       self.t = 0.
-      self.prev_ha = 0.
+      self.prev_ha = 0
       return self._get_obs()
 
     def step(self, action):
       prev_vel = self.vel
-      self.ha = action[0]
-      self.acc = self.motor_model_possibilities[action[0]] + norm.sample(0, 0.3)
+      self.prev_ha = action
+      self.acc = self.motor_model_possibilities()[action] + np.random.normal(0, pv_stddev)[0]
       self.vel = self.vel+self.acc*self.dt
       if self.vel < EPSILON:
         self.vel = 0
@@ -66,7 +69,7 @@ class Env_1d(gym.Env):
         self.pos = self.target
       self.pos += (prev_vel + self.vel)*.5*self.dt
       self.t += 1
-      return self._get_obs(), 0, self.t > MAX_T, self._get_info()
+      return self._get_obs(), 0, self.t > n_timesteps, self._get_info()
 
 
 

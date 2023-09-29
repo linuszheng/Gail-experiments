@@ -28,8 +28,8 @@ warnings.filterwarnings("ignore")
 
 _rng = np.random.default_rng()
 _ha_column = ["HA"]
-_la_column = ["LA.acc"]
-_feature_column = ["pos", "decMax", "accMax", "vMax", "vel", "target"]
+_la_column = ["LA.vx","LA.vy","LA.vz","LA.end"]
+_feature_column = ["x", "y", "z", "bx", "by", "bz", "tx", "ty", "tz", "end_width"]
 _data_path = "data"
 
 
@@ -44,7 +44,7 @@ np.set_printoptions(suppress=True, precision=3)
 def get_single_expert_df(n):
   return pd.read_csv(_data_path+f"/data{n}.csv", skipinitialspace=True)
 def get_single_expert_traj(n):
-  data = get_single_expert_df(n).astype({"HA": int})
+  data = get_single_expert_df(n).astype({_ha_column[0]: int})
   ha = data[_ha_column].to_numpy()
   la = data[_la_column].to_numpy()
   features = data[_feature_column].to_numpy()
@@ -133,10 +133,8 @@ def evaluate(model, trajectories):
 _traj_train = [get_single_expert_traj(i) for i in range(10)]
 _traj_all = [get_single_expert_traj(i) for i in range(30)]
 
-register(id="env-v0", entry_point='custom_envs.envs:Env_1d')
+register(id="env-v0", entry_point='custom_envs.envs:Env')
 _env_test = gym.make("env-v0")
-info = get_single_expert_df(0)
-_env_test.config(info["decMax"][0], info["accMax"][0], info["vMax"][0], info["target"][0])
 
 
 
