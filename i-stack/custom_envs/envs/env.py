@@ -2,14 +2,14 @@ import numpy as np
 import gym
 from gym import spaces
 from settings import numHA, n_timesteps, pv_stddev, pv_range, initialHA, initialLA, motor_model
-from panda_gym.envs import PandaPickAndPlaceEnv
+from panda_gym.envs import PandaStackEnv
 from gym.utils import seeding
 
 EPSILON = 10E-10
 
 class Env(gym.Env):
 
-  panda_env = PandaPickAndPlaceEnv()
+  panda_env = PandaStackEnv()
 
   def __init__(self):
     self.observation_space = spaces.Box(   low=np.array([-1]*10+[-4, -4, -4, -4]+[0,0]), 

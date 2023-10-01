@@ -29,7 +29,7 @@ warnings.filterwarnings("ignore")
 _rng = np.random.default_rng()
 _ha_column = ["HA"]
 _la_column = ["LA.vx","LA.vy","LA.vz","LA.end"]
-_feature_column = ["x", "y", "z", "bx", "by", "bz", "tx", "ty", "tz", "end_width"]
+_feature_column = ["x", "y", "z", "end_width", "bx1", "by1", "bz1", "bx2", "by2", "bz2", "tx1", "ty1", "tz1", "tx2", "ty2", "tz2"]
 _data_path = "data"
 
 

@@ -4,7 +4,7 @@
 training_set = 5
 validation_set = 30
 
-n_timesteps = 29
+n_timesteps = 150
 
 pv_range = [
     [-4, 4],
@@ -12,41 +12,41 @@ pv_range = [
     [-4, 4],
     [-4, 4]
 ]
-pv_stddev = [0.3, 0.3, 0.3, 0.3]
+pv_stddev = [0.2, 0.2, 0.2, 0.2]
 
 
 initialHA = 0
 initialLA = [0, 0, 0, 0]
 
 
-numHA = 2
+numHA = 5
 
 
-la_idx_wrt_lim_obs = [10, 11, 12, 13]
-la_idx_wrt_all_obs = [10, 11, 12, 13]
-features_idx = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-
+la_idx_wrt_lim_obs = list(range(16,20))
+la_idx_wrt_all_obs = list(range(16,20))
+features_idx = list(range(16))
 
 
 
 def motor_model(ha, data, data_prev):
-    bx, by, bz = data[3] - data[0], data[4] - data[1], data[5] - data[2]
-    
+    bx1, by1, bz1, bx2, by2, bz2 = data[4], data[5], data[6], data[7], data[8], data[9]
+    tx2, ty2, tz2 = data[13], data[14], data[15]
+
+    tz2 += 0.01
+
     if ha == 0:
-        return [bx * 5.0, by * 5.0, bz * 5.0, 0.6]
-    
-    if data_prev[13] >= 0.5:
-        return [bx * 5.0, by * 5.0, bz * 5.0, 0.3]
-    elif data_prev[13] >= 0.3:
-        return [bx * 5.0, by * 5.0, bz * 5.0, 0]
-    elif data_prev[13] >= 0.1:
-        return [bx * 5.0, by * 5.0, bz * 5.0, -0.3]
-    elif data_prev[13] >= -0.1:
-        return [bx * 5.0, by * 5.0, bz * 5.0, -0.6]
-    
-    vx = 5 * (data[6] - data[0])
-    vy = 5 * (data[7] - data[1])
-    vz = 5 * (data[8] - data[2])
-    end = -0.6
-    
-    return [vx, vy, vz, end]
+        action = [bx1 * 4.0, by1 * 4.0, bz1 * 4.0, 1]
+    elif ha == 1:
+        action = [tx2 * 4.0, ty2 * 4.0, tz2 * 4.0, -1]
+        if action[2] < 0:
+            action[2] = max(data_prev[18] - 0.15, action[2])
+    elif ha == 2:
+        action = [0, 0, 0.5, 1]
+    elif ha == 3:
+        action = [bx2 * 4.0, by2 * 4.0, bz2 * 4.0, 1]
+        if action[2] < 0:
+            action[2] = max(data_prev[18] - 0.15, action[2])
+    elif ha == 4:
+        action = [0, 0, 0.5, -1]
+
+    return action

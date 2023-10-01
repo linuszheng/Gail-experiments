@@ -2,17 +2,17 @@
 
 
 training_set = 5
-validation_set = 30
+validation_set = 20
 
-n_timesteps = 29
+n_timesteps = 49
 
 pv_range = [
-    [-4, 4],
-    [-4, 4],
-    [-4, 4],
-    [-4, 4]
+    [-2, 2],
+    [-2, 2],
+    [-2, 2],
+    [-2, 2],
 ]
-pv_stddev = [0.3, 0.3, 0.3, 0.3]
+pv_stddev = [0.2, 0.2, 0.2, 0.2]
 
 
 initialHA = 0
