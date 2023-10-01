@@ -12,7 +12,7 @@ from stable_baselines3.common.policies import ActorCriticPolicy
 from imitation.util.networks import RunningNorm
 from gail import GAIL
 from nets import MyRewardNet
-from settings import numHA, n_timesteps, motor_model, pv_stddev, initialHA, initialLA, la_idx_wrt_lim_obs, la_idx_wrt_all_obs, features_idx, training_set
+from settings import numHA, n_timesteps, motor_model, pv_stddev, initialHA, initialLA, la_idx_wrt_lim_obs, la_idx_wrt_all_obs, features_idx, training_set, validation_set
 from scipy.stats import norm
 import torch
 from hyperparams import _max_disc_acc_until_quit, _max_mode_until_quit, _learning_rate_func, \
@@ -100,6 +100,7 @@ def evaluate(model, trajectories):
       one_hot = np.zeros(numHA)
       np.put(one_hot,last_ha,1)
       obs = np.concatenate((select_features[:-numHA], one_hot))
+      print(obs)
       predicted_ha = model.predict(obs)[0]
       print(f"ha, pred1, pred3:             {ha[0]}", end="  ")
       print(f"-1", end="  ")
@@ -130,8 +131,8 @@ def evaluate(model, trajectories):
 
 
 
-_traj_train = [get_single_expert_traj(i) for i in range(10)]
-_traj_all = [get_single_expert_traj(i) for i in range(30)]
+_traj_train = [get_single_expert_traj(i) for i in range(training_set)]
+_traj_all = [get_single_expert_traj(i) for i in range(validation_set)]
 
 register(id="env-v0", entry_point='custom_envs.envs:Env')
 _env_test = gym.make("env-v0")
@@ -155,9 +156,9 @@ def sanity(model):
 
 
 _venv = make_vec_env("env-v0", n_envs=training_set, rng=_rng)
-for i in range(training_set):
-  info = get_single_expert_df(i)
-  _venv.env_method("config", info["decMax"][0], info["accMax"][0], info["vMax"][0], info["target"][0], indices=[i])
+# for i in range(training_set):
+#   info = get_single_expert_df(i)
+#   _venv.env_method("config", info["decMax"][0], info["accMax"][0], info["vMax"][0], info["target"][0], indices=[i])
 
 
 

@@ -4,7 +4,7 @@
 training_set = 5
 validation_set = 30
 
-n_timesteps = 30
+n_timesteps = 29
 
 pv_range = [
     [-4, 4],
