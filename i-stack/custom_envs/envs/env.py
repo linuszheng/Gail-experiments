@@ -12,9 +12,9 @@ class Env(gym.Env):
   panda_env = PandaStackEnv()
 
   def __init__(self):
-    self.observation_space = spaces.Box(   low=np.array([-1]*10+[-4, -4, -4, -4]+[0,0]), 
-                                  high=np.array([1]*10+[4, 4, 4, 4]+[1,1]), 
-                                  shape=(16,), dtype=np.float32)
+    self.observation_space = spaces.Box(   low=np.array([-1]*16 + [-2]*4 + [0]*5), 
+                                  high=np.array([1]*16 + [2]*4 + [1]*5), 
+                                  shape=(25,), dtype=np.float32)
     self.action_space = spaces.Discrete(numHA)
     self.reset()
     
@@ -28,11 +28,24 @@ class Env(gym.Env):
 
   def _get_obs(self):
     observation = self.panda_env._get_obs()
+    
+    
     world_state = observation["observation"]
-    target_pos = observation["desired_goal"][0:3]
-    x, y, z, bx, by, bz, tx, ty, tz, end_width = world_state[0], world_state[1], world_state[2], world_state[7], world_state[8], world_state[9], target_pos[0], target_pos[1], target_pos[2], world_state[6]
-    obs_pruned = [x, y, z, bx, by, bz, tx, ty, tz, end_width]
-    one_hot = [0,1] if self.last_ha else [1,0]
+    target_bottom = observation["desired_goal"][0:3]
+    target_top = observation["desired_goal"][3:6]
+
+    x, y, z, end_width = world_state[0], world_state[1], world_state[2], world_state[6]
+    bx1, by1, bz1, bx2, by2, bz2 = world_state[7], world_state[8], world_state[9], world_state[19], world_state[20], world_state[21]
+    tx1, ty1, tz1, tx2, ty2, tz2 = target_bottom[0], target_bottom[1], target_bottom[2], target_top[0], target_top[1], target_top[2]
+
+    bx1, by1, bz1, bx2, by2, bz2 = bx1 - x, by1 - y, bz1 - z, bx2 - x, by2 - y, bz2 - z
+    tx2, ty2, tz2 = tx2 - x, ty2 - y, tz2 - z
+
+    obs_pruned = [x, y, z, end_width, bx1, by1, bz1, bx2, by2, bz2, tx1, ty1, tz1, tx2, ty2, tz2]
+        
+    
+    one_hot = [0,0,0,0,0]
+    one_hot[self.last_ha] = 1
     return np.concatenate((obs_pruned, self.last_la, one_hot))
 
   def _get_info(self):

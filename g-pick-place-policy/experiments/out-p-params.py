@@ -17,6 +17,6 @@ _ppo_settings = {
   "ent_coef": _ent_coef_lo,
   "learning_rate": _learning_rate_func,
   "n_epochs": 60,
-  "gamma": .99,
+  "gamma": 1.,
 }
 _n_real_to_fake_label_flip = 0

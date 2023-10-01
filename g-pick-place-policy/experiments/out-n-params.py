@@ -2,7 +2,7 @@
 _max_disc_acc_until_quit = 2.0
 _max_mode_until_quit = 2.0
 def _learning_rate_func(progress):
-  lr_start = .0007
+  lr_start = .0006
   lr_end = .0002
   lr_diff = lr_end - lr_start
   return lr_start + progress * lr_diff
