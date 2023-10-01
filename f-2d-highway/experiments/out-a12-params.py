@@ -13,7 +13,7 @@ _policy_net_shape = dict(pi=[16, 16, 16], vf=[16, 16, 16])
 _ent_coef_lo = .0008
 _ent_coef_hi = .0020
 _ent_coef_slope_start = .8
-_n_real_to_fake_label_flip = .1
+_n_real_to_fake_label_flip = 0
 _ppo_settings = {
   "ent_coef": _ent_coef_lo,
   "learning_rate": _learning_rate_func,
