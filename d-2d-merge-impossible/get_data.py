@@ -7,18 +7,20 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-i', '--input')
 parser.add_argument('-w', '--write', action='store_const', const=True, default=False)
 parser.add_argument('-p', '--print', action='store_const', const=True, default=False)
+parser.add_argument('-m', '--matplot', action='store_const', const=True, default=False)
 parser_output = parser.parse_args()
 data_src_path = parser_output.input
 should_write_to_file = parser_output.write
 should_print = parser_output.print
+should_plot = parser_output.matplot
 
 
 
 import re
 re_anything = ".+?"
-re_float = "(-?\d+\.\d+)"
+re_float = "(-?\d+(?:\.?\d+)?)"
 
-f = open("experiments/out-"+data_src_path+".txt")
+f = open("experiments/out-"+data_src_path+".txt", encoding = "ISO-8859-1")
 
 class Prop:
   def __init__(self, label, re_selector, only_if_mean=False):
@@ -63,6 +65,7 @@ props.append(Prop("accuracy of generated HA on dataset", 'ACC 3. '))
 
 is_mean = True
 terminated_line = "not terminated"
+
 while True:
   line = f.readline()
   if re.findall('raw\/', line):
@@ -115,4 +118,12 @@ if should_write_to_file:
     prop.file_write_misc_info(summary)
 
 
+
+if should_plot:
+  print(len(props[1].values))
+  print(len(props[2].values))
+  import matplotlib.pyplot as plt
+  plt.plot(props[1].values)
+  plt.plot(props[2].values)
+  plt.savefig("plot.png")
 

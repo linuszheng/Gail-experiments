@@ -259,6 +259,9 @@ _gail_trainer = GAIL(
     n_real_to_fake_label_flip=m_n_real_to_fake_label_flip
 )
 
+_learner.policy.save("best_model")
+
+
 evaluate(_learner, _traj_all)
 sanity(_learner)
 for i in range(_n_train_loops):
