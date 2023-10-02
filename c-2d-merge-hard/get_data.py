@@ -7,7 +7,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-i', '--input')
 parser.add_argument('-w', '--write', action='store_const', const=True, default=False)
 parser.add_argument('-p', '--print', action='store_const', const=True, default=False)
-parser.add_argument('-m', '--matplot', action='store_const', const=True, default=False)
+parser.add_argument('-m', '--matplot', action='store_const', const=False, default=True)
 parser_output = parser.parse_args()
 data_src_path = parser_output.input
 should_write_to_file = parser_output.write
@@ -125,5 +125,5 @@ if should_plot:
   import matplotlib.pyplot as plt
   plt.plot(props[1].values)
   plt.plot(props[2].values)
-  plt.savefig("plot.png")
+  plt.savefig(f"plots/plot-{data_src_path}.png")
 
