@@ -2,7 +2,7 @@
 _max_disc_acc_until_quit = 2.0
 _max_mode_until_quit = 2.0
 def _learning_rate_func(progress):
-  lr_start = .0008
+  lr_start = .0006
   lr_end = .0002
   lr_diff = lr_end - lr_start
   return lr_start + progress * lr_diff
@@ -19,4 +19,4 @@ _ppo_settings = {
   "n_epochs": 50,
   "gamma": .99,
 }
-_n_real_to_fake_label_flip = .05
+_n_real_to_fake_label_flip = 0

@@ -19,4 +19,4 @@ _ppo_settings = {
   "n_epochs": 50,
   "gamma": .99,
 }
-_n_real_to_fake_label_flip = .05
+_n_real_to_fake_label_flip = .01
