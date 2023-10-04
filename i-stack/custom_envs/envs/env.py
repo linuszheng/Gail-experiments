@@ -12,8 +12,8 @@ class Env(gym.Env):
   panda_env = PandaStackEnv()
 
   def __init__(self):
-    self.observation_space = spaces.Box(   low=np.array([-1]*16 + [-2]*4 + [0]*5), 
-                                  high=np.array([1]*16 + [2]*4 + [1]*5), 
+    self.observation_space = spaces.Box(   low=np.array([-1]*16 + [-1]*4 + [0]*5), 
+                                  high=np.array([1]*16 + [1]*4 + [1]*5), 
                                   shape=(25,), dtype=np.float32)
     self.action_space = spaces.Discrete(numHA)
     self.reset()
@@ -53,7 +53,7 @@ class Env(gym.Env):
 
   def step(self, ha_to_take):
     self.t += 1
-    la_to_take = motor_model(self.last_ha, self._get_obs(), self._get_obs())
+    la_to_take = motor_model(ha_to_take, self._get_obs(), self._get_obs())
     self.panda_env.step(la_to_take)
     self.last_ha = ha_to_take
     self.last_la = la_to_take

@@ -1,5 +1,6 @@
 # Setting: 1D-target
 
+_min_performance_to_save = .38
 
 training_set = 5
 validation_set = 20
@@ -7,10 +8,10 @@ validation_set = 20
 n_timesteps = 149
 
 pv_range = [
-    [-2, 2],
-    [-2, 2],
-    [-2, 2],
-    [-2, 2],
+    [-1, 1],
+    [-1, 1],
+    [-1, 1],
+    [-1, 1],
 ]
 pv_stddev = [0.3, 0.3, 0.3, 0.3]
 

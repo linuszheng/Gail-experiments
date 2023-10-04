@@ -13,12 +13,16 @@ from stable_baselines3.common.policies import ActorCriticPolicy
 from imitation.util.networks import RunningNorm
 from gail import GAIL
 from nets import MyRewardNet
-from settings import numHA, _n_timesteps, motor_model, pv_stddev, initialHA, initialLA
+from settings import numHA, _n_timesteps, motor_model, pv_stddev, initialHA, initialLA, _min_performance_to_save
 from scipy.stats import norm
 import torch
+import random
 from hyperparams import _max_disc_acc_until_quit, _max_mode_until_quit, _learning_rate_func, \
 _n_gen_train_steps, _n_disc_updates_per_round, _buf_multiplier, _policy_net_shape, \
 _ent_coef_lo, _ent_coef_hi, _ent_coef_slope_start, _ppo_settings
+
+min_performance_to_save =  _min_performance_to_save
+model_save_name = "models/model-"+str(random.randint(0,100000000000))
 
 m_n_real_to_fake_label_flip = 0
 try:
@@ -152,6 +156,14 @@ def evaluate(model, trajectories):
   print("ACC 1.                        " + str(sum_right/(sum_right+sum_wrong)))
   print("ACC 3.                        " + str(sum_right3/(sum_right3+sum_wrong3)))
 
+  acc = sum_right3/(sum_right3+sum_wrong3)
+  global min_performance_to_save, model_save_name
+  if acc >= min_performance_to_save:
+    _learner.policy.save(model_save_name+"-acc-"+str(acc))
+    print("saved model to "+model_save_name)
+    min_performance_to_save = acc
+
+
   ha_chosen = [float(val) / float(2*_n_timesteps*30) for val in ha_chosen]
   print()
   print("distribution of HA choices")
@@ -259,8 +271,6 @@ _gail_trainer = GAIL(
     n_real_to_fake_label_flip=m_n_real_to_fake_label_flip
 )
 
-_learner.policy.save("best_model")
-
 
 evaluate(_learner, _traj_all)
 sanity(_learner)
@@ -269,16 +279,9 @@ for i in range(_n_train_loops):
     train_info = _gail_trainer.train(_n_gen_train_steps)
     mode_percentage = evaluate(_learner, _traj_all)
     sanity(_learner)
-    if train_info["disc_acc"]>=_max_disc_acc_until_quit:
-      print(f"FALSE CONVERGENCE ({train_info['disc_acc']:.5f}>={_max_disc_acc_until_quit:.5f}). terminating program.")
-      quit()
-    if mode_percentage>=_max_mode_until_quit:
-      print(f"MODE COLLAPSE ({mode_percentage:.5f}>={_max_mode_until_quit:.5f}). terminating program.")
-      quit()
     if mode_percentage>=_ent_coef_slope_start:
       print(f"NEAR MODE COLLAPSE ({mode_percentage:.5f}>={_ent_coef_slope_start:.5f}). RAISE ENTROPY")
       dif_percentage = (mode_percentage-_ent_coef_slope_start)/(1-_ent_coef_slope_start)
       _learner.ent_coef = _ent_coef_lo + dif_percentage*(_ent_coef_hi-_ent_coef_lo)
     else:
       _learner.ent_coef = _ent_coef_lo
-
