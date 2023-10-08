@@ -40,7 +40,10 @@ class MyRewardNet(RewardNet):
         
 
         full_build_mlp_kwargs: Dict[str, Any] = {
-            "hid_sizes": (32, 32),          # 16 16 in q6
+            # "hid_sizes": (32, 32),          # 32 32 in all
+            # "hid_sizes": (16, 16),          # 16 16 in q6 and small_x
+            "hid_sizes": (8, 8),          # 8 8 in tiny_x, rep_x
+            # "hid_sizes": (8, 4),                # 8 4 in tee_x
             **kwargs,
             # we do not want the values below to be overridden
             "in_size": combined_size,

@@ -1,5 +1,7 @@
 # Setting: 1D-target
 
+_min_performance_to_save = .8
+
 
 training_set = 5
 validation_set = 20

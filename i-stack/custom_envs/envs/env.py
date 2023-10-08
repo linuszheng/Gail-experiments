@@ -1,7 +1,7 @@
 import numpy as np
 import gym
 from gym import spaces
-from settings import numHA, n_timesteps, pv_stddev, pv_range, initialHA, initialLA, motor_model
+from settings import numHA, n_timesteps, pv_stddev, pv_range, initialHA, initialLA, motor_model, add_noise
 from panda_gym.envs import PandaStackEnv
 from gym.utils import seeding
 
@@ -54,6 +54,7 @@ class Env(gym.Env):
   def step(self, ha_to_take):
     self.t += 1
     la_to_take = motor_model(ha_to_take, self._get_obs(), self._get_obs())
+    la_to_take = add_noise(la_to_take)
     self.panda_env.step(la_to_take)
     self.last_ha = ha_to_take
     self.last_la = la_to_take

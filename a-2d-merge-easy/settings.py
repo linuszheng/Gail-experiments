@@ -1,6 +1,6 @@
 import numpy as np
 
-_min_performance_to_save = .68
+_min_performance_to_save = .64
 
 
 training_set = 10

@@ -1,5 +1,7 @@
 import numpy as np
 
+_min_performance_to_save = .7
+
 
 training_set = 10
 validation_set = 30 # including training_set

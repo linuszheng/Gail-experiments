@@ -13,12 +13,13 @@ from stable_baselines3.common.policies import ActorCriticPolicy
 from imitation.util.networks import RunningNorm
 from gail import GAIL
 from nets import MyRewardNet
-from settings import numHA, _n_timesteps, motor_model, pv_stddev, initialHA, initialLA
+from settings import numHA, _n_timesteps, motor_model, pv_stddev, initialHA, initialLA, _min_performance_to_save
 from scipy.stats import norm
 import torch
 from hyperparams import _max_disc_acc_until_quit, _max_mode_until_quit, _learning_rate_func, \
 _n_gen_train_steps, _n_disc_updates_per_round, _buf_multiplier, _policy_net_shape, \
 _ent_coef_lo, _ent_coef_hi, _ent_coef_slope_start, _ppo_settings
+from numpy import random
 
 m_n_real_to_fake_label_flip = 0
 try:
@@ -26,6 +27,10 @@ try:
   m_n_real_to_fake_label_flip = _n_real_to_fake_label_flip
 except:
   pass
+
+
+min_performance_to_save =  _min_performance_to_save
+model_save_name = "models/model-"+str(random.randint(0,100000000000))
 
 
 
@@ -151,6 +156,14 @@ def evaluate(model, trajectories):
   print("AVG PRED ERR 3.               " + str(sum_pred_err3 / _n_timesteps / 30))
   print("ACC 1.                        " + str(sum_right/(sum_right+sum_wrong)))
   print("ACC 3.                        " + str(sum_right3/(sum_right3+sum_wrong3)))
+
+
+  acc = sum_right3/(sum_right3+sum_wrong3)
+  global min_performance_to_save, model_save_name
+  if acc >= min_performance_to_save:
+    _learner.policy.save(model_save_name+"-acc-"+str(acc))
+    print("saved model to "+model_save_name)
+    min_performance_to_save = acc
 
   ha_chosen = [float(val) / float(2*_n_timesteps*30) for val in ha_chosen]
   print()

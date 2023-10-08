@@ -51,3 +51,8 @@ def motor_model(ha, data, data_prev):
         action = [0, 0, 0.5, -1]
 
     return action
+
+
+import numpy as np
+def add_noise(la):
+    return np.random.normal(la, pv_stddev)
