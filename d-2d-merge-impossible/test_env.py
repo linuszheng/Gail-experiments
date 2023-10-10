@@ -29,6 +29,7 @@ m_n_real_to_fake_label_flip = 0
 try:
   from hyperparams import _n_real_to_fake_label_flip
   m_n_real_to_fake_label_flip = _n_real_to_fake_label_flip
+  print("using label flip")
 except:
   pass
 
@@ -268,7 +269,7 @@ _gail_trainer = GAIL(
     venv=_venv,
     gen_algo=_learner,
     reward_net=_reward_net,
-    n_real_to_fake_label_flip=m_n_real_to_fake_label_flip
+    n_real_to_fake_label_flip=int(m_n_real_to_fake_label_flip*_n_timesteps)
 )
 
 evaluate(_learner, _traj_all)
