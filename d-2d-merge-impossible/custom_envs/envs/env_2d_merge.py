@@ -101,6 +101,9 @@ class Env_2d_merge(AbstractEnv):
     
     def step(self, action):
         res = super().step(action)
+        # print("STEP "+str(self.time*self.config["policy_frequency"])+" "+str(self.config["duration"]))
+        # print(res[0])
+        # print("CRASHED "+str(self.controlled_vehicles[0].crashed)+" "+str(not self.controlled_vehicles[0].on_road))
         return (res[0], res[1], res[2] or res[3], res[4])
 
 

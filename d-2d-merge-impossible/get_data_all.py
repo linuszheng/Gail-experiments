@@ -1,7 +1,7 @@
 import os
 import re
 
-re_data = "out-(sw[a-zA-Z0-9_]+)\.txt"
+re_data = "out-([a-zA-Z0-9_]+)\.txt"
 
 exp_list = []
 all_files = os.listdir("experiments")
