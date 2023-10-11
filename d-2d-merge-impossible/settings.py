@@ -26,6 +26,8 @@ TURN_HEADING = 0.15 # Target heading when turning
 TURN_TARGET = 30 # How much to adjust when targeting a lane (higher = smoother)
 MAX_VELOCITY = 45 # Maximum velocity
 
+lanes_count = 4
+
 lane_diff = 4
 def laneFinder(y):
     return round(y / lane_diff)

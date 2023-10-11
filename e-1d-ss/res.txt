@@ -1,0 +1,123 @@
+log obs of generated LA on dataset: minimum and maximum
+-1.0
+-1.0
+
+discriminator accuracy: minimum and maximum
+0.5
+1.0
+
+accuracy of generated HA on dataset: minimum and maximum
+0.1944
+0.7773333333333333
+
+timesteps elapsed: 4295
+not terminated
+
+4295
+4296
+log obs of generated LA on dataset: minimum and maximum
+-1.0
+-1.0
+
+discriminator accuracy: minimum and maximum
+0.432
+1.0
+
+accuracy of generated HA on dataset: minimum and maximum
+0.27813333333333334
+0.8125333333333333
+
+timesteps elapsed: 4265
+not terminated
+
+4265
+4266
+log obs of generated LA on dataset: minimum and maximum
+-1.0
+-1.0
+
+discriminator accuracy: minimum and maximum
+0.368
+1.0
+
+accuracy of generated HA on dataset: minimum and maximum
+0.232
+0.7506666666666667
+
+timesteps elapsed: 4303
+not terminated
+
+4303
+4304
+log obs of generated LA on dataset: minimum and maximum
+-1.0
+-1.0
+
+discriminator accuracy: minimum and maximum
+0.419
+1.0
+
+accuracy of generated HA on dataset: minimum and maximum
+0.3184
+0.7458666666666667
+
+timesteps elapsed: 4290
+not terminated
+
+4291
+4291
+log obs of generated LA on dataset: minimum and maximum
+-1.0
+-1.0
+
+discriminator accuracy: minimum and maximum
+0.473
+1.0
+
+accuracy of generated HA on dataset: minimum and maximum
+0.2376
+0.7733333333333333
+
+timesteps elapsed: 4258
+not terminated
+
+4259
+4259
+log obs of generated LA on dataset: minimum and maximum
+-1.0
+-1.0
+
+discriminator accuracy: minimum and maximum
+0.5
+1.0
+
+accuracy of generated HA on dataset: minimum and maximum
+0.316
+0.7666666666666667
+
+timesteps elapsed: 4274
+not terminated
+
+4275
+4275
+Available experiments:
+['01', '02', '03', '04', '05', '06']
+
+----------
+EXPERIMENT 01
+----------
+----------
+EXPERIMENT 02
+----------
+----------
+EXPERIMENT 03
+----------
+----------
+EXPERIMENT 04
+----------
+----------
+EXPERIMENT 05
+----------
+----------
+EXPERIMENT 06
+----------

@@ -176,17 +176,17 @@ for i in range(training_set):
 
 # GPU ----------------------------------------------------------------------------
 import torch
-
-mem_amount = [0]*4
-gpus_avail = [4, 5, 6, 7]
-for i in range(4):
-  mem_amount[i] = torch.cuda.mem_get_info(gpus_avail[i])
-  print(f"gpu {gpus_avail[i]} has {mem_amount[i]} mem available")
-chosen_gpu = gpus_avail[mem_amount.index(max(mem_amount))]
-device = torch.device(f'cuda:{chosen_gpu}')
+device = torch.device("cpu")
+if torch.cuda.is_available():
+  mem_amount = [0]*4
+  gpus_avail = [4, 5, 6, 7]
+  for i in range(4):
+    mem_amount[i] = torch.cuda.mem_get_info(gpus_avail[i])
+    print(f"gpu {gpus_avail[i]} has {mem_amount[i]} mem available")
+  chosen_gpu = gpus_avail[mem_amount.index(max(mem_amount))]
+  device = torch.device(f'cuda:{chosen_gpu}')
 print('Using device:', device)
 print()
-
 
 
 

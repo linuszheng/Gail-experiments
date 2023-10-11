@@ -13,7 +13,7 @@ from stable_baselines3.common.policies import ActorCriticPolicy
 from imitation.util.networks import RunningNorm
 from gail import GAIL
 from nets import MyRewardNet
-from settings import numHA, _n_timesteps, motor_model, pv_stddev, initialHA, initialLA, _min_performance_to_save
+from settings import numHA, _n_timesteps, motor_model, pv_stddev, initialHA, initialLA, _min_performance_to_save, lanes_count
 from scipy.stats import norm
 import torch
 from hyperparams import _max_disc_acc_until_quit, _max_mode_until_quit, _learning_rate_func, \
@@ -187,7 +187,7 @@ register(id="merge-v0", entry_point='custom_envs.envs:Env_2d_merge')
 
 _env_test = gym.make("merge-v0", config={"simulation_frequency": 24,
   "policy_frequency": 8,
-  "lanes_count": 6,
+  "lanes_count": lanes_count,
   "initial_lane_id": 0,
   'vehicles_count': 50,
   "duration": _n_timesteps})
@@ -214,7 +214,7 @@ def sanity(model):
 _venv = make_vec_env("merge-v0", n_envs=10, rng=_rng)
 _venv.env_method("configure", {"simulation_frequency": 24,
   "policy_frequency": 8,
-  "lanes_count": 6,
+  "lanes_count": lanes_count,
   "initial_lane_id": 0,
   'vehicles_count': 50,
   "duration": _n_timesteps})
@@ -223,14 +223,15 @@ _venv.env_method("configure", {"simulation_frequency": 24,
 
 # GPU ----------------------------------------------------------------------------
 import torch
-
-mem_amount = [0]*4
-gpus_avail = [4, 5, 6, 7]
-for i in range(4):
-  mem_amount[i] = torch.cuda.mem_get_info(gpus_avail[i])
-  print(f"gpu {gpus_avail[i]} has {mem_amount[i]} mem available")
-chosen_gpu = gpus_avail[mem_amount.index(max(mem_amount))]
-device = torch.device(f'cuda:{chosen_gpu}')
+device = torch.device("cpu")
+if torch.cuda.is_available():
+  mem_amount = [0]*4
+  gpus_avail = [4, 5, 6, 7]
+  for i in range(4):
+    mem_amount[i] = torch.cuda.mem_get_info(gpus_avail[i])
+    print(f"gpu {gpus_avail[i]} has {mem_amount[i]} mem available")
+  chosen_gpu = gpus_avail[mem_amount.index(max(mem_amount))]
+  device = torch.device(f'cuda:{chosen_gpu}')
 print('Using device:', device)
 print()
 

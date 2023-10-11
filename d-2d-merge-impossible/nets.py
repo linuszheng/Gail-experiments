@@ -46,7 +46,7 @@ class MyRewardNet(RewardNet):
             "in_size": combined_size,
             "out_size": 1,
             "squeeze_output": True,
-            "dropout_prob": 0.5,
+            # "dropout_prob": 0.5,
         }
 
         self.mlp = networks.build_mlp(**full_build_mlp_kwargs)

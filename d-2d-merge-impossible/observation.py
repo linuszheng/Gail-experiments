@@ -4,6 +4,7 @@ import numpy as np
 from observation_helper import process_obs
 from settings import feature_indices
 from settings import numHA
+from settings import laneFinder
 
 
 
@@ -22,3 +23,5 @@ class MyObservation(ObservationType):
     np.put(one_hot,self.env.repo["ha"],1)
     combo_obs = np.concatenate((res[feature_indices], self.env.repo["la"], one_hot))
     return combo_obs
+  def get_lane(self):
+    return laneFinder(process_obs(self.env, self.base_obs.observe())[1])

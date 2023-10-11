@@ -4,25 +4,25 @@ import re
 from scipy.stats import norm
 
 
-_data_path = "a-2d-merge-easy/data"
-_traj_path = "trajs/a-best-traj.txt"
-from trajs.a_settings import _n_timesteps, validation_set, training_set, initialLA, pv_stddev, motor_model, la_indices, ha_index
+# _data_path = "a-2d-merge-easy/data"
+# _traj_path = "trajs/a-best-traj.txt"
+# from trajs.a_settings import _n_timesteps, validation_set, training_set, initialLA, pv_stddev, motor_model, la_indices, ha_index
 
-_data_path = "b-2d-merge-medium/data"
-_traj_path = "trajs/b-best-traj.txt"
-from trajs.b_settings import _n_timesteps, validation_set, training_set, initialLA, pv_stddev, motor_model, la_indices, ha_index
+# _data_path = "b-2d-merge-medium/data"
+# _traj_path = "trajs/b-best-traj.txt"
+# from trajs.b_settings import _n_timesteps, validation_set, training_set, initialLA, pv_stddev, motor_model, la_indices, ha_index
 
-_data_path = "c-2d-merge-hard/data"
-_traj_path = "trajs/c-best-traj.txt"
-from trajs.c_settings import _n_timesteps, validation_set, training_set, initialLA, pv_stddev, motor_model, la_indices, ha_index
+# _data_path = "c-2d-merge-hard/data"
+# _traj_path = "trajs/c-best-traj.txt"
+# from trajs.c_settings import _n_timesteps, validation_set, training_set, initialLA, pv_stddev, motor_model, la_indices, ha_index
 
-_data_path = "d-2d-merge-impossible/data"
-_traj_path = "trajs/d-best-traj.txt"
-from trajs.d_settings import _n_timesteps, validation_set, training_set, initialLA, pv_stddev, motor_model, la_indices, ha_index
+# _data_path = "d-2d-merge-impossible/data"
+# _traj_path = "trajs/d-best-traj.txt"
+# from trajs.d_settings import _n_timesteps, validation_set, training_set, initialLA, pv_stddev, motor_model, la_indices, ha_index
 
-_data_path = "f-2d-highway/data"
-_traj_path = "trajs/f-best-traj.txt"
-from trajs.f_settings import _n_timesteps, validation_set, training_set, initialLA, pv_stddev, motor_model, la_indices, ha_index
+# _data_path = "f-2d-highway/data"
+# _traj_path = "trajs/f-best-traj.txt"
+# from trajs.f_settings import _n_timesteps, validation_set, training_set, initialLA, pv_stddev, motor_model, la_indices, ha_index
 
 
 

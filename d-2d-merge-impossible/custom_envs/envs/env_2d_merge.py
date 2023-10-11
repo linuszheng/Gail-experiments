@@ -7,7 +7,7 @@ from highway_env.vehicle.kinematics import Vehicle
 from highway_env import utils
 from typing import Dict, Text
 from gym.utils import seeding
-from settings import pv_stddev, initialHA, initialLA
+from settings import pv_stddev, initialHA, initialLA, laneFinder
 
 
 
@@ -98,6 +98,7 @@ class Env_2d_merge(AbstractEnv):
     
     def reset(self):
         return super().reset()[0]
+
     
     def step(self, action):
         res = super().step(action)
