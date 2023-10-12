@@ -174,15 +174,16 @@ _venv = make_vec_env("env-v0", n_envs=training_set, rng=_rng)
 # GPU ----------------------------------------------------------------------------
 import torch
 
-mem_amount = [0]*4
-gpus_avail = [4, 5, 6, 7]
-for i in range(4):
-  mem_amount[i] = torch.cuda.mem_get_info(gpus_avail[i])
-  print(f"gpu {gpus_avail[i]} has {mem_amount[i]} mem available")
-chosen_gpu = gpus_avail[mem_amount.index(max(mem_amount))]
-device = torch.device(f'cuda:{chosen_gpu}')
-print('Using device:', device)
-print()
+# mem_amount = [0]*4
+# gpus_avail = [4, 5, 6, 7]
+# for i in range(4):
+#   mem_amount[i] = torch.cuda.mem_get_info(gpus_avail[i])
+#   print(f"gpu {gpus_avail[i]} has {mem_amount[i]} mem available")
+# chosen_gpu = gpus_avail[mem_amount.index(max(mem_amount))]
+# device = torch.device(f'cuda:{chosen_gpu}')
+# print('Using device:', device)
+# print()
+device = torch.device("cpu")
 
 
 
@@ -221,6 +222,12 @@ _gail_trainer = GAIL(
     reward_net=_reward_net,
     n_real_to_fake_label_flip=int(_n_real_to_fake_label_flip*n_timesteps)
 )
+
+print("TEMP")
+temp_learner = MlpPolicy.load("models/model-31222174559-acc-0.4419463087248322", device=device)
+evaluate(temp_learner, _traj_all)
+print("ORARY")
+
 
 evaluate(_learner, _traj_all)
 sanity(_learner)

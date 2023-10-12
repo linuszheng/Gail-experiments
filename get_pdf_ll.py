@@ -24,6 +24,10 @@ from scipy.stats import norm
 # _traj_path = "trajs/f-best-traj.txt"
 # from trajs.f_settings import _n_timesteps, validation_set, training_set, initialLA, pv_stddev, motor_model, la_indices, ha_index
 
+_data_path = "i-stack/data"
+_traj_path = "trajs/i-best-traj.txt"
+from trajs.i_settings import _n_timesteps, validation_set, training_set, initialLA, pv_stddev, motor_model, la_indices, ha_index
+
 
 
 # get expert data -----------------------------------------------------------------
@@ -46,7 +50,7 @@ def get_all_pred_ha():
   f.readline()
   while True:
     line = f.readline()
-    if ha := re.findall("ha, pred1, pred3: \s+ \d  \d  (\d)", line):
+    if ha := re.findall("ha, pred1, pred3: \s+ \d  -?\d  (\d)", line):
       ha = int(ha[0])
       cur.append(ha)
     elif not line:
@@ -67,6 +71,8 @@ def get_err(a_, b_, stdev_):
 
 
 def evaluate(single_expert_traj, single_pred_ha):
+  print(len(single_expert_traj))
+  print(len(single_pred_ha))
   cum_err = 0
   cum_acc = 0
   last_la = initialLA
@@ -88,6 +94,7 @@ all_expert_traj = [get_single_expert_traj(i) for i in range(validation_set)]
 sum_err = 0
 sum_acc = 0
 for i in range(training_set, validation_set):
+  print(i)
   eval_res = evaluate(all_expert_traj[i], all_pred_ha[i])
   sum_err += eval_res[0]
   sum_acc += eval_res[1]

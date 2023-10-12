@@ -222,7 +222,7 @@ _gail_trainer = GAIL(
     venv=_venv,
     gen_algo=_learner,
     reward_net=_reward_net,
-    n_real_to_fake_label_flip=_n_real_to_fake_label_flip
+    n_real_to_fake_label_flip=int(_n_real_to_fake_label_flip*_n_gen_train_steps)
 )
 
 evaluate(_learner, _traj_all)
