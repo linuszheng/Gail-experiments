@@ -1,0 +1,28 @@
+
+
+e-1d-ss
+- success rate: 0.44
+- avg ll: -1.185925685168201
+- avg acc: 0.9172
+
+f-2d-highway
+- success rate: 0.13
+- avg ll: -1.3029297287707142
+- avg acc: 0.6932885906040269
+
+d-2d-merge-impossible
+- success rate: 0.59
+- avg ll: -1.632948231903303
+- avg acc: 0.6986486486486487
+
+g-pick-place-policy
+- success rate: 0.64
+- avg ll: -0.2761804840840343
+- avg acc: 0.89115646
+
+i-stack
+- success rate: 0.07
+- avg ll: -8.815666728577526
+- avg acc: 0.44474272930648767
+
+

@@ -6,6 +6,8 @@ _min_performance_to_save = .60
 training_set = 10
 validation_set = 30 # including training_set
 
+lanes_count = 4
+
 
 feature_indices = [0, 2, 5, 10, 15]
 

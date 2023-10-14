@@ -28,9 +28,13 @@ from scipy.stats import norm
 # _traj_path = "trajs/f-best-traj.txt"
 # from trajs.f_settings import _n_timesteps, validation_set, training_set, initialLA, pv_stddev, motor_model, la_indices, ha_index
 
-_data_path = "i-stack/data"
-_traj_path = "trajs/i-best-traj.txt"
-from trajs.i_settings import _n_timesteps, validation_set, training_set, initialLA, pv_stddev, motor_model, la_indices, ha_index
+_data_path = "g-pick-place-policy/data"
+_traj_path = "trajs/g-best-traj.txt"
+from trajs.g_settings import _n_timesteps, validation_set, training_set, initialLA, pv_stddev, motor_model, la_indices, ha_index
+
+# _data_path = "i-stack/data"
+# _traj_path = "trajs/i-best-traj.txt"
+# from trajs.i_settings import _n_timesteps, validation_set, training_set, initialLA, pv_stddev, motor_model, la_indices, ha_index
 
 
 
