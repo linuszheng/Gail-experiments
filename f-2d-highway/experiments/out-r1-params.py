@@ -8,7 +8,7 @@ def _learning_rate_func(progress):
   return lr_start + progress * lr_diff
 _n_gen_train_steps = 60
 _n_disc_updates_per_round = 3
-_buf_multiplier = 20
+_buf_multiplier = 10
 _policy_net_shape = dict(pi=[16, 16, 16, 16], vf=[16, 16, 16, 16])
 _ent_coef_lo = .0008
 _ent_coef_hi = .0015

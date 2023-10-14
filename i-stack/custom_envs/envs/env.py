@@ -55,7 +55,7 @@ class Env(gym.Env):
     self.t += 1
     la_to_take = motor_model(ha_to_take, self._get_obs(), self._get_obs())
     la_to_take = add_noise(la_to_take)
-    self.panda_env.step(la_to_take)
+    success = self.panda_env.step(la_to_take)[2]
     self.last_ha = ha_to_take
     self.last_la = la_to_take
-    return self._get_obs(), 0, self.t > n_timesteps, {}
+    return self._get_obs(), success, self.t > n_timesteps, {}

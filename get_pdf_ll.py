@@ -20,6 +20,10 @@ from scipy.stats import norm
 # _traj_path = "trajs/d-best-traj.txt"
 # from trajs.d_settings import _n_timesteps, validation_set, training_set, initialLA, pv_stddev, motor_model, la_indices, ha_index
 
+# _data_path = "e-1d-ss/data"
+# _traj_path = "trajs/e-best-traj.txt"
+# from trajs.e_settings import _n_timesteps, validation_set, training_set, initialLA, pv_stddev, motor_model, la_indices, ha_index
+
 # _data_path = "f-2d-highway/data"
 # _traj_path = "trajs/f-best-traj.txt"
 # from trajs.f_settings import _n_timesteps, validation_set, training_set, initialLA, pv_stddev, motor_model, la_indices, ha_index
@@ -71,8 +75,6 @@ def get_err(a_, b_, stdev_):
 
 
 def evaluate(single_expert_traj, single_pred_ha):
-  print(len(single_expert_traj))
-  print(len(single_pred_ha))
   cum_err = 0
   cum_acc = 0
   last_la = initialLA
@@ -85,6 +87,7 @@ def evaluate(single_expert_traj, single_pred_ha):
     cum_err += err
     cum_acc += (info[ha_index]==pred_ha)
     last_la = actual_la
+    print(str(info[ha_index]==pred_ha)+" "+str(pred_ha)+" "+str(actual_la)+" "+str(pred_la)+" "+str(err))
   return (cum_err / _n_timesteps, cum_acc / _n_timesteps)
 
 

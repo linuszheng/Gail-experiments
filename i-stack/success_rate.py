@@ -1,9 +1,9 @@
 from stable_baselines3.ppo import MlpPolicy
 import torch
-from settings import _n_timesteps
+from settings import n_timesteps
 import gym
 from gym.envs.registration import register
-import my_spaces
+# import my_spaces
 
 
 
@@ -16,33 +16,25 @@ my_model = MlpPolicy.load("models/model-31222174559-acc-0.4419463087248322", dev
 
 
 
-
-_env_test = gym.make("merge-v0", config={"simulation_frequency": 24,
-  "policy_frequency": 8,
-  "lanes_count": 6,
-  "initial_lane_id": 0,
-  'vehicles_count': 50,
-  "duration": _n_timesteps})
+register(id="env-v0", entry_point='custom_envs.envs:Env')
+_env_test = gym.make("env-v0")
   
 
 
 
 def sanity(model):
+  print("SANITY")
   prev_obs = _env_test.reset()
-
-  for i in range(0,_n_timesteps):
+  for i in range(0,n_timesteps):
     predicted_action = model.predict(prev_obs)[0]
-    # print(predicted_action)
     cur_state = _env_test.step(predicted_action)
     prev_obs = cur_state[0]
-    if _env_test.vehicle.crashed:
-      print("CRASHED")
-      return False
-    if not _env_test.vehicle.on_road:
-      print("OFF ROAD")
-      return False
-  print("SUCCESS")
-  return True
+    success = cur_state[1]
+    if success:
+      print("SUCCESS")
+      return True
+  print("FAILURE")
+  return False
 
 
 successes = 0
