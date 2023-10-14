@@ -175,9 +175,9 @@ _venv = make_vec_env("env-v0", n_envs=training_set, rng=_rng)
 # GPU ----------------------------------------------------------------------------
 import torch
 
-mem_amount = [0]*4
-gpus_avail = [4, 5, 6, 7]
-for i in range(4):
+mem_amount = [0]*8
+gpus_avail = [0, 1, 2, 3, 4, 5, 6, 7]
+for i in range(8):
   mem_amount[i] = torch.cuda.mem_get_info(gpus_avail[i])
   print(f"gpu {gpus_avail[i]} has {mem_amount[i]} mem available")
 chosen_gpu = gpus_avail[mem_amount.index(max(mem_amount))]

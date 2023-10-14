@@ -187,7 +187,7 @@ register(id="merge-v0", entry_point='custom_envs.envs:Env_2d_merge')
 
 _env_test = gym.make("merge-v0", config={"simulation_frequency": 24,
   "policy_frequency": 8,
-  "lanes_count": 6,
+  "lanes_count": 4,
   "initial_lane_id": 0,
   'vehicles_count': 50,
   "duration": _n_timesteps})
@@ -214,7 +214,7 @@ def sanity(model):
 _venv = make_vec_env("merge-v0", n_envs=10, rng=_rng)
 _venv.env_method("configure", {"simulation_frequency": 24,
   "policy_frequency": 8,
-  "lanes_count": 6,
+  "lanes_count": 4,
   "initial_lane_id": 0,
   'vehicles_count': 50,
   "duration": _n_timesteps})
@@ -224,9 +224,9 @@ _venv.env_method("configure", {"simulation_frequency": 24,
 # GPU ----------------------------------------------------------------------------
 import torch
 
-mem_amount = [0]*4
-gpus_avail = [4, 5, 6, 7]
-for i in range(4):
+mem_amount = [0]*8
+gpus_avail = [0, 1, 2, 3, 4, 5, 6, 7]
+for i in range(8):
   mem_amount[i] = torch.cuda.mem_get_info(gpus_avail[i])
   print(f"gpu {gpus_avail[i]} has {mem_amount[i]} mem available")
 chosen_gpu = gpus_avail[mem_amount.index(max(mem_amount))]
@@ -269,7 +269,7 @@ _gail_trainer = GAIL(
     venv=_venv,
     gen_algo=_learner,
     reward_net=_reward_net,
-    n_real_to_fake_label_flip=m_n_real_to_fake_label_flip
+    n_real_to_fake_label_flip=int(m_n_real_to_fake_label_flip*_n_timesteps)
 )
 
 evaluate(_learner, _traj_all)

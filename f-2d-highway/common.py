@@ -70,6 +70,7 @@ def compute_train_stats(
         label_dist = th.distributions.Bernoulli(logits=disc_logits_expert_is_high)
         entropy = th.mean(label_dist.entropy())
 
+
     return {
         "disc_loss": float(th.mean(disc_loss)),
         "disc_acc": float(acc),
@@ -590,10 +591,14 @@ class AdversarialTrainer(base.DemonstrationAlgorithm[types.Transitions]):
             dones = np.concatenate([expert_batch["dones"], gen_batch["dones"]])
             # notice that the labels use the convention that expert samples are
             # labelled with 1 and generator samples with 0.
+            is_expert_ones = np.ones(self.demo_minibatch_size, dtype=int)
+            is_expert_ones[:self.n_real_to_fake_label_flip] = 0
+            np.random.shuffle(is_expert_ones)
+
             labels_expert_is_one = np.concatenate(
                 [
-                    np.ones(self.demo_minibatch_size - self.n_real_to_fake_label_flip, dtype=int),
-                    np.zeros(self.demo_minibatch_size + self.n_real_to_fake_label_flip, dtype=int),
+                    is_expert_ones,
+                    np.zeros(self.demo_minibatch_size, dtype=int),
                 ],
             )
 
