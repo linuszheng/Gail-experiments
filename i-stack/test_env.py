@@ -102,7 +102,7 @@ def evaluate(model, trajectories):
       np.put(one_hot,last_ha,1)
       obs = np.concatenate((select_features[:-numHA], one_hot))
       # print(obs)
-      predicted_ha = model.predict(obs)[0]
+      predicted_ha = model.predict(obs, deterministic=True)[0]
       print(f"ha, pred1, pred3:             {ha[0]}", end="  ")
       print(f"-1", end="  ")
       print(f"{predicted_ha}")
@@ -155,7 +155,7 @@ def sanity(model):
   prev_obs = _env_test.reset()
   # print(prev_obs)
   for i in range(0,n_timesteps):
-    predicted_action = model.predict(prev_obs)[0]
+    predicted_action = model.predict(prev_obs, deterministic=True)[0]
     print(predicted_action)
     cur_state = _env_test.step(predicted_action)
     prev_obs = cur_state[0]

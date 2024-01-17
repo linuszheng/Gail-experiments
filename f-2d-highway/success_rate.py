@@ -34,7 +34,7 @@ def sanity(model):
   prev_obs = _env_test.reset()
   crashed = False
   for i in range(0,_n_timesteps):
-    predicted_action = model.predict(prev_obs)[0]
+    predicted_action = model.predict(prev_obs, deterministic=True)[0]
     # print(predicted_action)
     cur_state = _env_test.step(predicted_action)
     prev_obs = cur_state[0]

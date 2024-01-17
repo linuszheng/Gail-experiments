@@ -120,7 +120,7 @@ def evaluate(model, trajectories):
     print(f"DATA ENV {i}")
     last_ha = initialHA
     for all_features, select_features, ha in zip(traj["all_obs"], traj["gt_obs"], traj["actual_ha"]):
-      predicted_ha = model.predict(select_features)
+      predicted_ha = model.predict(select_features, deterministic=True)
       la1 = motor_model(ha[0], all_features, select_features[5:7])
       la2 = motor_model(predicted_ha[0], all_features, select_features[5:7])
       print(f"ha, pred1, pred3:             {ha[0]}", end="  ")
@@ -138,7 +138,7 @@ def evaluate(model, trajectories):
       one_hot = np.zeros(4)
       np.put(one_hot,last_ha,1)
       obs_3 = np.concatenate((select_features[:-4], one_hot))
-      pred_ha_3 = model.predict(obs_3)
+      pred_ha_3 = model.predict(obs_3, deterministic=True)
       la3 = motor_model(pred_ha_3[0], all_features, select_features[5:7])
       print(f"{pred_ha_3[0]}")
       pred_err3 = get_err(la3[0], la_actual[0], pv_stddev[0]) + get_err(la3[1], la_actual[1], pv_stddev[1])
@@ -196,7 +196,7 @@ def sanity(model):
   print("SANITY")
   prev_obs = _env_test.reset()
   for i in range(0,_n_timesteps):
-    predicted_action = model.predict(prev_obs)[0]
+    predicted_action = model.predict(prev_obs, deterministic=True)[0]
     print(predicted_action)
     cur_state = _env_test.step(predicted_action)
     prev_obs = cur_state[0]
